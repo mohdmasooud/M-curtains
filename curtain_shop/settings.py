@@ -62,20 +62,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'curtain_shop.wsgi.application'
 
 # Database
-# On Vercel / AWS Lambda serverless environment, the root directory is read-only.
-# We copy the seeded db.sqlite3 to writable /tmp directory to allow full read & write access.
+# On Vercel / AWS Lambda / Serverless environments, the project folder is read-only.
+# We copy the seeded db.sqlite3 to the writable /tmp directory so SQLite can read & write freely.
+import sys
 import shutil
 
-IS_SERVERLESS = (
-    os.environ.get('VERCEL') is not None
-    or os.environ.get('VERCEL_ENV') is not None
-    or os.environ.get('AWS_LAMBDA_FUNCTION_NAME') is not None
-    or os.environ.get('LAMBDA_TASK_ROOT') is not None
-    or str(BASE_DIR).startswith('/var/task')
-    or not os.access(str(BASE_DIR), os.W_OK)
-)
+def is_local_writable_env():
+    if sys.platform == 'win32' and not os.environ.get('VERCEL') and not os.environ.get('VERCEL_ENV'):
+        return True
+    test_probe = BASE_DIR / '.write_probe.tmp'
+    try:
+        test_probe.write_text('probe')
+        test_probe.unlink()
+        return True
+    except Exception:
+        return False
 
-if IS_SERVERLESS:
+if not is_local_writable_env():
     tmp_dir = Path('/tmp')
     tmp_db = tmp_dir / 'db.sqlite3'
     src_db = BASE_DIR / 'db.sqlite3'
