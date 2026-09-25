@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Bag | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <div>
+      <h1 class="display-6 fw-bold font-serif mb-1">Your Shopping Bag</h1>
+      <p class="small text-muted mb-0">Review your custom drapery items and apply savings coupons.</p>
+    </div>
+    <a href="{% url 'products:product_list' %}" class="btn btn-outline-dark rounded-pill btn-sm px-3">
+      <i class="fas fa-arrow-left me-1"></i> Continue Shopping
+    </a>
+  </div>
+
+  {% if cart_total_items > 0 %}
+    <div class="row g-5">
+      <!-- Items List Column -->
+      <div class="col-lg-8">
+        <div class="bg-white p-4 rounded-4 border shadow-sm">
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead class="table-light small">
+                <tr>
+                  <th>Product & Custom Specs</th>
+                  <th>Price</th>
+                  <th style="width: 120px;">Qty</th>
+                  <th>Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in cart %}
+                  <tr>
+                    <td>
+                      <div class="d-flex gap-3 align-items-center">
+                        <img src="{{ item.product.display_image }}" alt="{{ item.product.name }}" class="rounded-3 border" style="width: 70px; height: 70px; object-fit: cover;">
+                        <div>
+                          <a href="{% url 'products:product_detail' slug=item.product.slug %}" class="fw-bold text-dark text-decoration-none">
+                            {{ item.product.name }}
+                          </a>
+                          <div class="small text-muted">
+                            <span class="badge bg-light text-dark border">{{ item.width_cm }}cm × {{ item.drop_cm }}cm</span>
+                            <span class="badge bg-light text-dark border">{{ item.pleat_name }}</span>
+                            <span class="badge bg-light text-dark border">{{ item.lining_name }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="fw-semibold">₹{{ item.unit_price }}</td>
+                    <td>
+                      <form method="POST" action="{% url 'cart:cart_update' item_key=item.item_key %}" class="d-flex align-items-center gap-1">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99" class="form-control form-control-sm text-center" onchange="this.form.submit()">
+                      </form>
+                    </td>
+                    <td class="fw-bold text-dark">₹{{ item.total_price }}</td>
+                    <td>
+                      <a href="{% url 'cart:cart_remove' item_key=item.item_key %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Remove Item">
+                        <i class="fas fa-times"></i>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+            <a href="{% url 'cart:cart_clear' %}" class="small text-danger text-decoration-none">
+              <i class="fas fa-trash-alt me-1"></i> Clear Entire Bag
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary & Coupon Column -->
+      <div class="col-lg-4">
+        <!-- Coupon Code Form -->
+        <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+          <h6 class="fw-bold font-serif mb-2"><i class="fas fa-tag text-warning me-2"></i> Promotional Code</h6>
+          {% if cart.coupon %}
+            <div class="p-2 bg-success bg-opacity-10 border border-success rounded-3 d-flex justify-content-between align-items-center mb-2">
+              <span class="small fw-bold text-success"><i class="fas fa-check me-1"></i> {{ cart.coupon.code }} ({{ cart.coupon.discount_percentage }}% OFF)</span>
+              <form method="POST" action="{% url 'cart:coupon_remove' %}" class="d-inline mb-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm text-danger py-0 border-0 bg-transparent" title="Remove Coupon"><i class="fas fa-times"></i></button>
+              </form>
+            </div>
+          {% else %}
+            <form method="POST" action="{% url 'cart:coupon_apply' %}">
+              {% csrf_token %}
+              <div class="input-group">
+                <input type="text" name="coupon_code" class="form-control form-control-sm text-uppercase" placeholder="e.g. LUXE20" required>
+                <button class="btn btn-navy btn-sm" type="submit">Apply</button>
+              </div>
+            </form>
+            <div class="form-text small">Try code <strong>LUXE20</strong> for 20% off orders over ₹2,000!</div>
+          {% endif %}
+        </div>
+
+        <!-- Summary Totals -->
+        <div class="bg-white p-4 rounded-4 border shadow-sm">
+          <h5 class="fw-bold font-serif mb-3">Order Summary</h5>
+          
+          <div class="d-flex justify-content-between small text-muted mb-2">
+            <span>Subtotal ({{ cart_total_items }} panels)</span>
+            <span class="text-dark fw-semibold">₹{{ cart.get_subtotal }}</span>
+          </div>
+
+          {% if cart.get_discount_amount > 0 %}
+            <div class="d-flex justify-content-between small text-success mb-2">
+              <span>Promotional Discount</span>
+              <span class="fw-semibold">-₹{{ cart.get_discount_amount }}</span>
+            </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between small text-muted mb-2">
+            <span>Estimated Shipping</span>
+            <span class="text-dark fw-semibold">
+              {% if cart.get_shipping_fee == 0 %}
+                <span class="text-success fw-bold">FREE</span>
+              {% else %}
+                ₹{{ cart.get_shipping_fee }}
+              {% endif %}
+            </span>
+          </div>
+
+          <div class="d-flex justify-content-between small text-muted mb-3">
+            <span>Estimated Tax (5%)</span>
+            <span class="text-dark fw-semibold">₹{{ cart.get_tax_amount }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between fs-5 fw-bold text-dark pt-3 border-top mb-4">
+            <span>Estimated Total</span>
+            <span class="fw-bold text-dark price-modern">₹{{ cart.get_grand_total }}</span>
+          </div>
+
+          <a href="{% url 'orders:checkout' %}" class="btn btn-gold btn-lg w-100 rounded-pill shadow">
+            Proceed to Checkout <i class="fas fa-lock ms-2 small"></i>
+          </a>
+
+          <div class="text-center mt-3 small text-muted">
+            <i class="fas fa-shield-alt text-warning me-1"></i> 256-Bit SSL Encrypted Checkout
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="bg-white p-5 rounded-4 border shadow-sm text-center max-w-700 mx-auto my-4">
+      <i class="fas fa-shopping-bag fs-1 text-warning opacity-50 mb-3 d-block"></i>
+      <h3 class="fw-bold font-serif mb-2">Your Shopping Bag is Empty</h3>
+      <p class="text-muted mb-4">Explore our curated collections of luxury velvet, French linen, and total blackout curtains.</p>
+      <a href="{% url 'products:product_list' %}" class="btn btn-gold btn-lg rounded-pill px-5">
+        Explore Collections
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block page_title %}Store Analytics & Operations Dashboard{% endblock %}
+
+{% block admin_content %}
+<!-- KPI Metric Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card gold-border">
+      <div>
+        <div class="metric-title">Total Revenue</div>
+        <div class="metric-value font-serif">₹{{ total_revenue|floatformat:2 }}</div>
+        <div class="small text-success mt-1"><i class="fas fa-arrow-up me-1"></i> +18.4% this month</div>
+      </div>
+      <div class="metric-icon-box bg-warning bg-opacity-10 text-warning">
+        <i class="fas fa-rupee-sign"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card blue-border">
+      <div>
+        <div class="metric-title">Total Orders</div>
+        <div class="metric-value">{{ total_orders }}</div>
+        <div class="small text-muted mt-1">{{ pending_orders }} active in tailoring/transit</div>
+      </div>
+      <div class="metric-icon-box bg-primary bg-opacity-10 text-primary">
+        <i class="fas fa-box-open"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card emerald-border">
+      <div>
+        <div class="metric-title">Curtain Products</div>
+        <div class="metric-value">{{ total_products }}</div>
+        <div class="small text-muted mt-1">Across 6 luxury fabric lines</div>
+      </div>
+      <div class="metric-icon-box bg-success bg-opacity-10 text-success">
+        <i class="fas fa-layer-group"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card purple-border">
+      <div>
+        <div class="metric-title">Registered Clients</div>
+        <div class="metric-value">{{ total_customers }}</div>
+        <div class="small text-muted mt-1">Active customer accounts</div>
+      </div>
+      <div class="metric-icon-box bg-purple bg-opacity-10 text-purple" style="color: #8b5cf6;">
+        <i class="fas fa-users"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+  <!-- Order Status Distribution -->
+  <div class="col-lg-5">
+    <div class="admin-card h-100">
+      <div class="admin-card-header">
+        <h6 class="fw-bold mb-0">Order Status Distribution</h6>
+        <span class="badge bg-light text-dark">Live Data</span>
+      </div>
+      <div class="p-4" style="height: 300px;">
+        <canvas id="orderStatusChart" data-labels='{{ status_labels_json|safe }}' data-values='{{ status_data_json|safe }}'></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Inventory Breakdown -->
+  <div class="col-lg-7">
+    <div class="admin-card h-100">
+      <div class="admin-card-header">
+        <h6 class="fw-bold mb-0">Products by Collection Category</h6>
+        <span class="badge bg-light text-dark">Catalog Share</span>
+      </div>
+      <div class="p-4" style="height: 300px;">
+        <canvas id="categoryBreakdownChart" data-labels='{{ category_labels_json|safe }}' data-values='{{ category_data_json|safe }}'></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Orders & Inventory Warnings -->
+<div class="row g-4">
+  <!-- Recent Orders Table -->
+  <div class="col-lg-8">
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h6 class="fw-bold mb-0">Recent Client Orders</h6>
+        <a href="{% url 'store_admin:orders_list' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">View All Orders</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light small">
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in recent_orders %}
+              <tr>
+                <td>
+                  <a href="{% url 'store_admin:order_detail' order_number=order.order_number %}" class="fw-bold text-dark text-decoration-none font-monospace">
+                    #{{ order.order_number }}
+                  </a>
+                </td>
+                <td>
+                  <div class="fw-semibold small">{{ order.full_name }}</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">{{ order.email }}</div>
+                </td>
+                <td class="fw-bold text-dark">₹{{ order.total_amount }}</td>
+                <td>
+                  <span class="status-badge {% if order.payment_status == 'Paid' %}status-paid{% else %}status-pending{% endif %}">
+                    {{ order.payment_status }}
+                  </span>
+                </td>
+                <td>
+                  {% if order.status == 'Delivered' %}
+                    <span class="status-badge status-delivered">Delivered</span>
+                  {% elif order.status == 'Shipped' %}
+                    <span class="status-badge status-shipped">Shipped</span>
+                  {% elif order.status == 'Tailoring' %}
+                    <span class="status-badge status-tailoring">In Tailoring</span>
+                  {% elif order.status == 'Confirmed' %}
+                    <span class="status-badge status-confirmed">Confirmed</span>
+                  {% else %}
+                    <span class="status-badge status-pending">{{ order.status }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{% url 'store_admin:order_detail' order_number=order.order_number %}" class="btn btn-sm btn-outline-dark py-1 px-2" title="Manage Order">
+                    <i class="fas fa-cog"></i>
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No orders found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Low Stock Warnings & Quick Operations -->
+  <div class="col-lg-4">
+    <!-- Low Stock Alert -->
+    <div class="admin-card mb-4">
+      <div class="admin-card-header bg-danger bg-opacity-10 text-danger border-danger">
+        <h6 class="fw-bold mb-0"><i class="fas fa-exclamation-triangle me-1"></i> Low Stock Alerts</h6>
+        <span class="badge bg-danger">{{ low_stock_products }} items</span>
+      </div>
+      <div class="p-3">
+        {% if low_stock_items %}
+          <div class="d-flex flex-column gap-2">
+            {% for item in low_stock_items %}
+              <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light border">
+                <div class="text-truncate me-2" style="max-width: 180px;">
+                  <div class="small fw-bold text-dark text-truncate">{{ item.name }}</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">₹{{ item.base_price }} • {{ item.category.name }}</div>
+                </div>
+                <span class="badge bg-danger rounded-pill">{{ item.stock_quantity }} panels</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="small text-muted text-center py-3">All curtain inventories well stocked.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Quick Operations -->
+    <div class="admin-card p-3">
+      <h6 class="fw-bold mb-3">Quick Operations</h6>
+      <div class="d-grid gap-2">
+        <a href="{% url 'store_admin:product_add' %}" class="btn btn-gold btn-sm text-start">
+          <i class="fas fa-plus-circle me-2"></i> Add New Curtain Product
+        </a>
+        <a href="{% url 'store_admin:sql_console' %}" class="btn btn-outline-dark btn-sm text-start font-monospace">
+          <i class="fas fa-terminal me-2 text-warning"></i> Run SQL Database Query
+        </a>
+        <a href="{% url 'store_admin:coupon_add' %}" class="btn btn-navy btn-sm text-start">
+          <i class="fas fa-ticket-alt me-2"></i> Create Promo Coupon
+        </a>
+        <a href="{% url 'store_admin:categories_list' %}" class="btn btn-outline-secondary btn-sm text-start">
+          <i class="fas fa-tags me-2"></i> Manage Fabric Categories
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

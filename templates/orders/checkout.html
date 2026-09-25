@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  
+  <div class="max-w-700 mx-auto text-center mb-5">
+    <span class="text-uppercase fw-bold small text-warning letter-spacing-1">Secure Ordering</span>
+    <h1 class="display-6 fw-bold font-serif mb-1">Checkout & Bespoke Tailoring Details</h1>
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="row g-5">
+      <!-- Left Column: Shipping & Payment -->
+      <div class="col-lg-7">
+        
+        <!-- Customer & Shipping Information -->
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-4">
+          <h4 class="fw-bold font-serif mb-4 text-dark"><i class="fas fa-shipping-fast text-warning me-2"></i> 1. Shipping Destination</h4>
+          
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label small fw-bold">Full Name *</label>
+              {{ form.full_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Email Address *</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Phone Number *</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Street Address *</label>
+              {{ form.street_address }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Apartment, Suite, Unit</label>
+              {{ form.apartment_suite }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">City *</label>
+              {{ form.city }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">State / Province *</label>
+              {{ form.state }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Postal Code *</label>
+              {{ form.postal_code }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Country *</label>
+              {{ form.country }}
+            </div>
+            <div class="col-12 mt-3">
+              <label class="form-label small fw-bold">Special Tailoring or Delivery Instructions</label>
+              {{ form.order_notes }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+          <h4 class="fw-bold font-serif mb-4 text-dark"><i class="fas fa-credit-card text-warning me-2"></i> 2. Payment Method</h4>
+          
+          <div class="d-flex flex-column gap-3 mb-4">
+            <!-- Credit Card Option -->
+            <label class="spec-selector-btn active p-3 rounded-3 border d-flex flex-column gap-2 cursor-pointer">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <input type="radio" name="payment_method" value="card" class="form-check-input" checked id="payCard">
+                  <span class="fw-bold text-dark">Credit / Debit Card</span>
+                </div>
+                <div class="d-flex gap-1 text-muted fs-5">
+                  <i class="fab fa-cc-visa"></i>
+                  <i class="fab fa-cc-mastercard"></i>
+                  <i class="fab fa-cc-amex"></i>
+                </div>
+              </div>
+              <div class="row g-2 mt-2 pt-2 border-top">
+                <div class="col-12">
+                  <input type="text" class="form-control form-control-sm" placeholder="Card Number (e.g. 4532 •••• •••• 8920)" value="4532 8920 1829 4910">
+                </div>
+                <div class="col-6">
+                  <input type="text" class="form-control form-control-sm" placeholder="MM/YY" value="12/28">
+                </div>
+                <div class="col-6">
+                  <input type="password" class="form-control form-control-sm" placeholder="CVC" value="382">
+                </div>
+              </div>
+            </label>
+
+            <!-- Instant UPI / Net Banking Option -->
+            <label class="spec-selector-btn p-3 rounded-3 border d-flex align-items-center justify-content-between cursor-pointer">
+              <div class="d-flex align-items-center gap-2">
+                <input type="radio" name="payment_method" value="upi" class="form-check-input" id="payUpi">
+                <span class="fw-bold text-dark">Instant Bank Transfer / UPI</span>
+              </div>
+              <i class="fas fa-university text-muted"></i>
+            </label>
+
+            <!-- Cash on Delivery Option -->
+            <label class="spec-selector-btn p-3 rounded-3 border d-flex align-items-center justify-content-between cursor-pointer">
+              <div class="d-flex align-items-center gap-2">
+                <input type="radio" name="payment_method" value="cod" class="form-check-input" id="payCod">
+                <span class="fw-bold text-dark">Cash on Delivery (White Glove)</span>
+              </div>
+              <i class="fas fa-money-bill-wave text-muted"></i>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Order Review -->
+      <div class="col-lg-5">
+        <div class="bg-white p-4 rounded-4 border shadow-sm sticky-top" style="top: 100px;">
+          <h5 class="fw-bold font-serif mb-3">Order Summary</h5>
+          
+          <!-- Items List -->
+          <div class="d-flex flex-column gap-3 mb-4 max-h-300 overflow-y-auto">
+            {% for item in cart %}
+              <div class="d-flex gap-3 align-items-center pb-2 border-bottom">
+                <img src="{{ item.product.display_image }}" alt="{{ item.product.name }}" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;">
+                <div class="flex-grow-1">
+                  <div class="small fw-bold text-dark text-truncate" style="max-width: 200px;">{{ item.product.name }}</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">{{ item.quantity }}x • {{ item.width_cm }}x{{ item.drop_cm }}cm • {{ item.pleat_name }}</div>
+                </div>
+                <div class="small fw-bold text-dark">₹{{ item.total_price }}</div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Financials -->
+          <div class="d-flex justify-content-between small text-muted mb-2">
+            <span>Subtotal</span>
+            <span class="text-dark fw-semibold">₹{{ cart.get_subtotal }}</span>
+          </div>
+
+          {% if cart.get_discount_amount > 0 %}
+            <div class="d-flex justify-content-between small text-success mb-2">
+              <span>Discount</span>
+              <span class="fw-semibold">-₹{{ cart.get_discount_amount }}</span>
+            </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between small text-muted mb-2">
+            <span>Shipping</span>
+            <span class="text-dark fw-semibold">
+              {% if cart.get_shipping_fee == 0 %}
+                <span class="text-success fw-bold">FREE</span>
+              {% else %}
+                ₹{{ cart.get_shipping_fee }}
+              {% endif %}
+            </span>
+          </div>
+
+          <div class="d-flex justify-content-between small text-muted mb-3">
+            <span>Tax (5%)</span>
+            <span class="text-dark fw-semibold">₹{{ cart.get_tax_amount }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between fs-4 fw-bold text-dark pt-3 border-top mb-4">
+            <span>Total</span>
+            <span class="price-modern text-dark fw-bold">₹{{ cart.get_grand_total }}</span>
+          </div>
+
+          <button type="submit" class="btn btn-gold btn-lg w-100 rounded-pill shadow py-3">
+            <i class="fas fa-lock me-2"></i> Place Order & Pay ₹{{ cart.get_grand_total }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

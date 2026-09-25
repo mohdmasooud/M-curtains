@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Order History | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <div>
+      <h2 class="fw-bold font-serif mb-1">My Drapery Order History</h2>
+      <p class="small text-muted mb-0">Track active shipments and view past invoices.</p>
+    </div>
+    <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-dark rounded-pill btn-sm px-3">
+      Dashboard
+    </a>
+  </div>
+
+  {% if orders %}
+    <div class="d-flex flex-column gap-4">
+      {% for order in orders %}
+        <div class="bg-white p-4 rounded-4 border shadow-sm">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 pb-3 border-bottom mb-3">
+            <div>
+              <span class="badge bg-warning text-dark me-2">Order #{{ order.order_number }}</span>
+              <span class="small text-muted">Placed on {{ order.created_at|date:"F d, Y • h:i A" }}</span>
+            </div>
+            <div>
+              {% if order.status == 'Delivered' %}
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1">Delivered</span>
+              {% elif order.status == 'Shipped' %}
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1">Shipped</span>
+              {% elif order.status == 'Tailoring' %}
+                <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1">In Custom Tailoring</span>
+              {% else %}
+                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1">{{ order.status }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row g-4 align-items-center">
+            <!-- Items Thumbnails -->
+            <div class="col-lg-7">
+              <div class="d-flex flex-column gap-2">
+                {% for item in order.items.all %}
+                  <div class="d-flex align-items-center gap-3">
+                    <img src="{{ item.product_image_url }}" alt="{{ item.product_name }}" class="rounded-3 border" style="width: 50px; height: 50px; object-fit: cover;">
+                    <div>
+                      <div class="small fw-bold text-dark">{{ item.product_name }}</div>
+                      <div class="small text-muted">{{ item.quantity }}x • {{ item.width_cm }}x{{ item.drop_cm }}cm • {{ item.pleat_name }}</div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Price & Actions -->
+            <div class="col-lg-5 text-lg-end">
+              <div class="small text-muted mb-1">Total Paid</div>
+              <div class="fs-4 fw-bold font-serif text-dark mb-3">₹{{ order.total_amount }}</div>
+              <div class="d-flex flex-wrap justify-content-lg-end gap-2">
+                <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-navy btn-sm rounded-pill px-3">
+                  <i class="fas fa-truck me-1"></i> Track Progress
+                </a>
+                <a href="{% url 'orders:order_invoice' order_number=order.order_number %}" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                  <i class="fas fa-file-invoice me-1"></i> Invoice
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5 bg-white rounded-4 border shadow-sm">
+      <i class="fas fa-box-open fs-1 text-muted opacity-50 mb-3 d-block"></i>
+      <h4>No orders found</h4>
+      <p class="text-muted small">You have not placed any custom curtain orders yet.</p>
+      <a href="{% url 'products:product_list' %}" class="btn btn-gold btn-sm">Explore Curtain Collections</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

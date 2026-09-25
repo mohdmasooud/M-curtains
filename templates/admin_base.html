@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Store Admin | LuxeDrape Management Portal{% endblock %}</title>
+  
+  <link rel="icon" type="image/png" href="https://img.icons8.com/color/48/curtains.png">
+  
+  <!-- Google Fonts: Cormorant Garamond, Outfit, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Admin Theme CSS -->
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-body">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <a href="{% url 'store_admin:dashboard' %}" class="admin-sidebar-brand">
+      <i class="fas fa-layer-group text-warning"></i>
+      <span>Luxe<span class="gold">Admin</span></span>
+    </a>
+
+    <div class="py-2">
+      <div class="admin-nav-section">Main Menu</div>
+      <a href="{% url 'store_admin:dashboard' %}" class="admin-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <i class="fas fa-chart-line"></i> Dashboard
+      </a>
+      <a href="{% url 'store_admin:orders_list' %}" class="admin-nav-item {% if 'orders' in request.path %}active{% endif %}">
+        <i class="fas fa-box-open"></i> Orders & Shipments
+      </a>
+      
+      <div class="admin-nav-section">Catalog Management</div>
+      <a href="{% url 'store_admin:products_list' %}" class="admin-nav-item {% if 'products' in request.path %}active{% endif %}">
+        <i class="fas fa-scroll"></i> Curtain Products
+      </a>
+      <a href="{% url 'store_admin:categories_list' %}" class="admin-nav-item {% if 'categories' in request.path %}active{% endif %}">
+        <i class="fas fa-tags"></i> Categories & Fabrics
+      </a>
+      <a href="{% url 'store_admin:coupons_list' %}" class="admin-nav-item {% if 'coupons' in request.path %}active{% endif %}">
+        <i class="fas fa-ticket-alt"></i> Coupons & Discounts
+      </a>
+
+      <div class="admin-nav-section">Store Operations</div>
+      <a href="{% url 'store_admin:customers_list' %}" class="admin-nav-item {% if 'customers' in request.path %}active{% endif %}">
+        <i class="fas fa-users"></i> Customers
+      </a>
+      <a href="{% url 'store_admin:sql_console' %}" class="admin-nav-item {% if 'sql-console' in request.path %}active{% endif %}">
+        <i class="fas fa-terminal text-warning"></i> SQL Console
+      </a>
+      
+      <div class="admin-nav-section">Quick Links</div>
+      <a href="{% url 'core:home' %}" class="admin-nav-item">
+        <i class="fas fa-store"></i> View Live Store
+      </a>
+      <a href="{% url 'store_admin:logout' %}" class="admin-nav-item text-danger">
+        <i class="fas fa-sign-out-alt"></i> Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Area -->
+  <div class="admin-main-wrapper">
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <span class="fw-bold text-dark fs-5 font-serif">{% block page_title %}Management Portal{% endblock %}</span>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'store_admin:sql_console' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3 font-monospace" style="font-size: 0.82rem;">
+          <i class="fas fa-terminal me-1"></i> SQL Console
+        </a>
+        <a href="{% url 'core:home' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+          <i class="fas fa-external-link-alt me-1"></i> Customer View
+        </a>
+        <div class="vr h-50 my-auto"></div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; font-family: var(--font-modern);">
+            {{ user.username|slice:":1"|upper }}
+          </div>
+          <div class="d-none d-sm-block">
+            <div class="fw-semibold text-dark small">{{ user.get_full_name|default:user.first_name|default:user.username }}</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Store Administrator</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Admin Content Area -->
+    <div class="admin-content">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4" role="alert">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-info-circle fs-5 me-2"></i>
+              <div>{{ message }}</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block admin_content %}{% endblock %}
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

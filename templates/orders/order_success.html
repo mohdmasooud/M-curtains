@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm text-center">
+        
+        <div class="feature-icon-circle mx-auto bg-success bg-opacity-10 text-success" style="width: 80px; height: 80px; font-size: 2.2rem;">
+          <i class="fas fa-check-circle"></i>
+        </div>
+
+        <span class="badge bg-warning text-dark mb-2 mt-3">Order #{{ order.order_number }}</span>
+        <h2 class="display-6 fw-bold font-serif mb-2">Thank You, {{ order.full_name }}!</h2>
+        <p class="text-muted lead mb-4">
+          Your bespoke drapery order has been received and scheduled for artisan tailoring. A detailed confirmation has been sent to <strong>{{ order.email }}</strong>.
+        </p>
+
+        <!-- Order Summary Box -->
+        <div class="p-4 bg-light rounded-4 border text-start mb-4">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <div class="small text-muted">Delivery Destination</div>
+              <div class="fw-bold text-dark">{{ order.street_address }}, {{ order.city }}, {{ order.state }} {{ order.postal_code }}</div>
+            </div>
+            <div class="col-sm-6">
+              <div class="small text-muted">Payment Status</div>
+              <div class="fw-bold text-dark">
+                {{ order.get_payment_method_display }} 
+                <span class="badge {% if order.payment_status == 'Paid' %}bg-success{% else %}bg-warning text-dark{% endif %} ms-1">{{ order.payment_status }}</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="small text-muted">Estimated Tailoring & Dispatch</div>
+              <div class="fw-bold text-dark">3 - 5 Business Days</div>
+            </div>
+            <div class="col-sm-6">
+              <div class="small text-muted">Total Charged</div>
+              <div class="fs-5 fw-bold text-dark font-serif">₹{{ order.total_amount }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-navy rounded-pill px-4">
+            <i class="fas fa-map-marker-alt me-2"></i> Track Tailoring Progress
+          </a>
+          <a href="{% url 'orders:order_invoice' order_number=order.order_number %}" target="_blank" class="btn btn-outline-dark rounded-pill px-4">
+            <i class="fas fa-file-invoice me-2"></i> Print Invoice
+          </a>
+          <a href="{% url 'core:home' %}" class="btn btn-gold rounded-pill px-4">
+            Return Home
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

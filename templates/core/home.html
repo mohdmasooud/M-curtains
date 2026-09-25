@@ -1,0 +1,572 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LuxeDrape | Bespoke Luxury Curtains & Haute Drapery{% endblock %}
+
+{% block extra_css %}
+<!-- 3D Modern Scroll & Interactive Visual Effects Styles -->
+<link rel="stylesheet" href="{% static 'css/home_3d.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Top Scroll Progress Indicator -->
+<div id="scrollProgressBar"></div>
+
+<!-- ==========================================================================
+     1. CINEMATIC 3D EDITORIAL HERO SECTION (CANVAS STARDUST & 3D SPOTLIGHT)
+     ========================================================================== -->
+<section class="hero-editorial position-relative overflow-hidden">
+  <!-- Interactive 3D Gold Stardust Background Canvas -->
+  <canvas id="hero3DCanvas"></canvas>
+
+  <div class="container hero-editorial-content py-4">
+    <div class="row align-items-center g-5">
+      
+      <!-- Left Column: Copy, Trust Metrics & CTAs -->
+      <div class="col-lg-7 reveal-3d-left">
+        
+        <div class="hero-editorial-badge mb-3">
+          <span class="live-pulse-dot"></span>
+          <span>Haute Interior Drapery • 3D Handcrafted Precision</span>
+        </div>
+
+        <h1 class="hero-editorial-title">
+          Architectural Curtains Tailored with <span class="serif-italic">Mastery</span>
+        </h1>
+
+        <p class="hero-editorial-subtitle">
+          Experience heavyweight Normandy flax linen, royal silk velvet, and 100% thermal blackout drapes cut with laser precision to your exact window dimensions.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+          <a href="{% url 'products:product_list' %}" class="btn btn-luxe-gold btn-lg shadow-lg">
+            <i class="fas fa-shopping-bag me-1"></i> Explore Collections
+          </a>
+          <a href="#interactive3DStudio" class="btn btn-luxe-dark btn-lg border border-warning-subtle">
+            <i class="fas fa-cube text-warning me-1"></i> 3D Atelier Studio
+          </a>
+        </div>
+
+        <!-- Trust Metric Badges with Live Animated Counters -->
+        <div class="hero-metrics-strip">
+          <div class="hero-metric-item">
+            <i class="fas fa-star text-warning"></i>
+            <span><strong data-count-to="4.98" data-suffix="/5">4.98/5</strong> (<span data-count-to="3500" data-suffix="+ Homes">3,500+ Homes</span>)</span>
+          </div>
+          <div class="hero-metric-item">
+            <i class="fas fa-ruler-combined text-warning"></i>
+            <span><strong>0mm</strong> Laser Tolerance</span>
+          </div>
+          <div class="hero-metric-item">
+            <i class="fas fa-truck-fast text-warning"></i>
+            <span>White-Glove Delivery</span>
+          </div>
+        </div>
+
+        <!-- Press Mentions -->
+        <div class="press-logos-bar">
+          <div class="small text-uppercase fw-bold text-light opacity-50 mb-3" style="font-size: 0.72rem; letter-spacing: 0.15em; font-family: var(--font-modern);">
+            Featured in Premier Architecture & Design Publications
+          </div>
+          <div class="d-flex flex-wrap align-items-center gap-4 gap-md-5">
+            <span class="press-logo-text">Architectural Digest</span>
+            <span class="press-logo-text">Elle Decor</span>
+            <span class="press-logo-text">Vogue Living</span>
+            <span class="press-logo-text">Harper's Bazaar</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Interactive 3D Tilt Spotlight Card -->
+      <div class="col-lg-5 d-none d-lg-block reveal-3d-right">
+        <div class="perspective-container">
+          <div class="hero-showcase-card tilt-card-3d shadow-hover" data-max-tilt="12" data-scale="1.03">
+            <img src="{% static 'images/curtain_gold_velvet.jpg' %}" alt="Champagne Gold Heavy Velvet Drape" class="w-100" style="height: 500px; object-fit: cover;">
+            
+            <!-- Floating 3D Badge (Top Left) -->
+            <div class="hero-floating-pill-top tilt-depth-layer-high">
+              <i class="fas fa-gem text-warning"></i>
+              <span>Spring 2026 Haute Atelier</span>
+            </div>
+
+            <!-- Bottom Floating 3D Glass Layer -->
+            <div class="hero-floating-card-bottom tilt-depth-layer">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-warning text-dark fw-bold font-modern" style="font-size: 0.7rem; letter-spacing: 0.05em;">3D BESPOKE SPOTLIGHT</span>
+                <div class="text-warning small"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+              </div>
+              <h6 class="text-white font-serif mb-1 fw-bold fs-5">Champagne Gold Silk Velvet</h6>
+              <p class="small text-light opacity-80 mb-0 font-sans">420 GSM acoustic thermal insulation with French Double Pinch Pleats.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     2. ARTISAN VALUE PILLARS (3D BENTO GRID WITH HOVER PHYSICS)
+     ========================================================================== -->
+<section class="py-5 my-4">
+  <div class="container">
+    <div class="row g-4">
+      
+      <div class="col-lg-3 col-md-6 reveal-on-scroll stagger-1">
+        <a href="{% url 'core:measurement_guide' %}" class="text-decoration-none d-block h-100">
+          <div class="bento-feature-card tilt-card-3d" data-max-tilt="8">
+            <div class="bento-icon-box">
+              <i class="fas fa-cut"></i>
+            </div>
+            <h5 class="bento-title">Laser Precision Fit</h5>
+            <p class="bento-desc">Custom cut to your exact window width and floor drop height with millimeter accuracy.</p>
+            <div class="mt-auto pt-2 small text-warning fw-semibold font-modern">Learn More &rarr;</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-lg-3 col-md-6 reveal-on-scroll stagger-2">
+        <a href="{% url 'products:product_list' %}" class="text-decoration-none d-block h-100">
+          <div class="bento-feature-card tilt-card-3d" data-max-tilt="8">
+            <div class="bento-icon-box">
+              <i class="fas fa-feather-alt"></i>
+            </div>
+            <h5 class="bento-title">420 GSM Master Weaves</h5>
+            <p class="bento-desc">Normandy organic flax, royal silk velvet pile, and dense acoustic sound dampening.</p>
+            <div class="mt-auto pt-2 small text-warning fw-semibold font-modern">Explore Weaves &rarr;</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-lg-3 col-md-6 reveal-on-scroll stagger-3">
+        <a href="{% url 'products:product_list' %}" class="text-decoration-none d-block h-100">
+          <div class="bento-feature-card tilt-card-3d" data-max-tilt="8">
+            <div class="bento-icon-box">
+              <i class="fas fa-moon"></i>
+            </div>
+            <h5 class="bento-title"><span data-count-to="100" data-suffix="%">100%</span> Total Blackout</h5>
+            <p class="bento-desc">3-Pass bonded thermal polymer coating eliminating 100% of incoming sunlight and glare.</p>
+            <div class="mt-auto pt-2 small text-warning fw-semibold font-modern">View Blackouts &rarr;</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-lg-3 col-md-6 reveal-on-scroll stagger-4">
+        <a href="{% url 'core:about' %}" class="text-decoration-none d-block h-100">
+          <div class="bento-feature-card tilt-card-3d" data-max-tilt="8">
+            <div class="bento-icon-box">
+              <i class="fas fa-shipping-fast"></i>
+            </div>
+            <h5 class="bento-title">White-Glove Delivery</h5>
+            <p class="bento-desc">Complimentary insured express tracked delivery on all bespoke drapery orders over ₹2,000.</p>
+            <div class="mt-auto pt-2 small text-warning fw-semibold font-modern">Delivery Policy &rarr;</div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     3. INTERACTIVE 3D ATELIER DRAPERY STUDIO (LIVE SIMULATOR & LIGHTING MODES)
+     ========================================================================== -->
+<section id="interactive3DStudio" class="py-5 bg-dark text-white position-relative my-4" style="background: radial-gradient(circle at 50% 10%, #162038 0%, #080d1a 100%);">
+  <div class="container py-4">
+    
+    <div class="row align-items-center g-5">
+      
+      <!-- Left Column: Interactive 3D Room Window Simulator -->
+      <div class="col-lg-7 reveal-3d-left">
+        <div class="atelier-3d-studio-box p-3 p-md-4">
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-warning text-dark fw-bold font-modern" style="font-size: 0.72rem;">LIVE 3D SIMULATOR</span>
+              <span class="small text-light opacity-75 d-none d-sm-inline">Test Drapery Textures & Day/Night Light</span>
+            </div>
+            
+            <!-- Ambient Lighting Mode Switcher -->
+            <div class="d-flex gap-2">
+              <button type="button" class="studio-pill-btn active" data-studio-light="day" title="Simulate Morning Daylight">
+                <i class="fas fa-sun text-warning me-1"></i> Day
+              </button>
+              <button type="button" class="studio-pill-btn" data-studio-light="sunset" title="Simulate Warm Sunset Golden Hour">
+                <i class="fas fa-cloud-sun text-warning me-1"></i> Sunset
+              </button>
+              <button type="button" class="studio-pill-btn" data-studio-light="night" title="Simulate Night Time Blackout">
+                <i class="fas fa-moon text-info me-1"></i> Night
+              </button>
+            </div>
+          </div>
+
+          <!-- Window Frame with Dynamic 3D Drapery Physics -->
+          <div id="studioWindowFrame" class="atelier-window-frame ambient-day" style="background-image: url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80');">
+            
+            <!-- Ambient Moon Glow for Night Mode -->
+            <div class="window-moon-glow"></div>
+
+            <!-- Brass Curtain Rod with Finials -->
+            <div class="curtain-rod-brass">
+              <div class="curtain-rod-finial-left"></div>
+              <div class="curtain-rod-finial-right"></div>
+            </div>
+
+            <!-- Pair of 3D Drapery Panels with Wave Physics -->
+            <div class="curtain-curtain-pair">
+              <!-- Left Curtain Panel -->
+              <div id="studioLeftPanel" class="curtain-panel-3d curtain-panel-left" style="width: 48%; background-image: url('{% static 'images/curtain_gold_velvet.jpg' %}');">
+                <div class="curtain-pleat-shadows"></div>
+              </div>
+
+              <!-- Right Curtain Panel -->
+              <div id="studioRightPanel" class="curtain-panel-3d curtain-panel-right" style="width: 48%; background-image: url('{% static 'images/curtain_gold_velvet.jpg' %}');">
+                <div class="curtain-pleat-shadows"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Interactive Curtain Draw Slider -->
+          <div class="mt-4 pt-2">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label for="studioDrawSlider" class="small fw-bold text-warning font-modern">
+                <i class="fas fa-arrows-left-right me-1"></i> Drag to Open / Close Drapes:
+              </label>
+              <span id="studioDrawValText" class="badge bg-white bg-opacity-10 text-light small font-monospace">
+                Fully Closed (Full Coverage)
+              </span>
+            </div>
+            <input type="range" class="form-range" id="studioDrawSlider" min="16" max="48" value="48" step="1">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: Fabric Texture & Weave Palette Switcher -->
+      <div class="col-lg-5 reveal-3d-right">
+        <span class="text-uppercase fw-bold small text-warning font-modern" style="letter-spacing: 0.14em;">3D Bespoke Customizer</span>
+        <h2 class="display-6 fw-bold font-serif mb-3 text-white">Interactive Fabric & Weave Studio</h2>
+        <p class="text-light opacity-80 font-sans mb-4">
+          Click the artisanal swatches below to test how different drapery textures interact with ambient sunlight and evening shadow in real time.
+        </p>
+
+        <!-- Fabric Swatch Selector -->
+        <div class="p-4 rounded-4 border border-secondary border-opacity-40 bg-white bg-opacity-5 mb-4">
+          <div class="small fw-bold text-uppercase text-warning letter-spacing-1 mb-3 font-modern">
+            Select Master Weave Swatch:
+          </div>
+          
+          <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+            <button type="button" class="fabric-swatch-chip active" data-studio-fabric="gold_velvet" style="background: #c5a880;" title="Champagne Gold Silk Velvet"></button>
+            <button type="button" class="fabric-swatch-chip" data-studio-fabric="emerald_velvet" style="background: #0b3d2e;" title="Heritage Emerald Royal Velvet"></button>
+            <button type="button" class="fabric-swatch-chip" data-studio-fabric="nordic_linen" style="background: #d4c5b1;" title="Normandy Pure Washed Linen"></button>
+            <button type="button" class="fabric-swatch-chip" data-studio-fabric="navy_blackout" style="background: #0f172a;" title="Obsidian Midnight 100% Blackout"></button>
+          </div>
+
+          <div class="border-top border-secondary border-opacity-30 pt-3">
+            <h6 id="studioFabricNameLabel" class="fw-bold font-serif text-white fs-5 mb-1">
+              Champagne Gold Imperial Silk Velvet
+            </h6>
+            <p id="studioFabricDescLabel" class="small text-light opacity-75 mb-0 font-sans">
+              420 GSM heavy drape with luminous incandescent highlights & acoustic dampening.
+            </p>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'core:room_visualizer' %}" class="btn btn-luxe-gold btn-lg">
+            <i class="fas fa-vr-cardboard me-1"></i> Full Room Visualizer
+          </a>
+          <a href="{% url 'core:measurement_guide' %}" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-ruler-horizontal me-1"></i> Sizing Guide
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     4. CURATED COLLECTIONS SHOWCASE (3D TILT CARDS & DEPTH OVERLAYS)
+     ========================================================================== -->
+<section class="py-5 bg-white border-top border-bottom">
+  <div class="container py-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 reveal-on-scroll">
+      <div>
+        <span class="text-uppercase fw-bold small text-warning font-modern" style="letter-spacing: 0.14em;">Haute Atelier Collections</span>
+        <h2 class="display-6 fw-bold font-serif mb-0 text-dark">Shop by Fabric & Ambience</h2>
+      </div>
+      <a href="{% url 'products:product_list' %}" class="btn btn-luxe-outline-gold mt-3 mt-md-0">
+        Explore All Collections &rarr;
+      </a>
+    </div>
+
+    <div class="row g-4">
+      {% for category in categories %}
+        <div class="col-lg-4 col-md-6 reveal-scale stagger-{{ forloop.counter }}">
+          <a href="{% url 'products:category_detail' slug=category.slug %}" class="category-card-luxe tilt-card-3d" data-max-tilt="10">
+            <img src="{{ category.display_image }}" alt="{{ category.name }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/curtain_gold_velvet.jpg' %}';">
+            <div class="card-overlay">
+              <h4 class="category-title tilt-depth-layer">{{ category.name }}</h4>
+              <p class="category-subtitle mb-1 tilt-depth-layer">{{ category.description|truncatewords:8 }}</p>
+              <div class="category-hover-pill tilt-depth-layer-high">
+                <span>View Collection</span>
+                <i class="fas fa-arrow-right small"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     5. 3-STEP BESPOKE TAILORING PROCESS (3D STEPPERS WITH DIRECT LINKS)
+     ========================================================================== -->
+<section class="py-5 my-4">
+  <div class="container py-3">
+    <div class="text-center max-w-700 mx-auto mb-5 reveal-on-scroll">
+      <span class="text-uppercase fw-bold small text-warning font-modern" style="letter-spacing: 0.14em;">Effortless Sizing & Customization</span>
+      <h2 class="display-6 fw-bold font-serif text-dark">How Bespoke Tailoring Works</h2>
+      <p class="text-muted font-sans mt-2">Achieve custom designer-grade drapery in three intuitive steps from the comfort of home.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4 reveal-on-scroll stagger-1">
+        <a href="{% url 'core:measurement_guide' %}" class="text-decoration-none d-block h-100">
+          <div class="stepper-card-3d tilt-card-3d" data-max-tilt="8">
+            <span class="step-badge-num">STEP 01</span>
+            <div class="bento-icon-box mx-auto mt-2">
+              <i class="fas fa-ruler-horizontal"></i>
+            </div>
+            <h5 class="font-serif fw-bold text-dark fs-4 mb-2 text-center">Measure Window Width & Drop</h5>
+            <p class="small text-muted mb-0 text-center">Input your curtain rod width and desired floor drop height in centimeters for laser millimeter fit.</p>
+            <div class="text-center mt-3 small text-warning fw-semibold font-modern">Launch Measurement Guide &rarr;</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-md-4 reveal-on-scroll stagger-2">
+        <a href="{% url 'products:product_list' %}" class="text-decoration-none d-block h-100">
+          <div class="stepper-card-3d tilt-card-3d" data-max-tilt="8">
+            <span class="step-badge-num">STEP 02</span>
+            <div class="bento-icon-box mx-auto mt-2">
+              <i class="fas fa-layer-group"></i>
+            </div>
+            <h5 class="font-serif fw-bold text-dark fs-4 mb-2 text-center">Select Pleats & Fullness</h5>
+            <p class="small text-muted mb-0 text-center">Choose French Double/Triple Pinch Pleats, Modern Eyelets, Pencil Pleats, or S-Fold Wave headers.</p>
+            <div class="text-center mt-3 small text-warning fw-semibold font-modern">Browse All Headers &rarr;</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-md-4 reveal-on-scroll stagger-3">
+        <a href="{% url 'core:room_visualizer' %}" class="text-decoration-none d-block h-100">
+          <div class="stepper-card-3d tilt-card-3d" data-max-tilt="8">
+            <span class="step-badge-num">STEP 03</span>
+            <div class="bento-icon-box mx-auto mt-2">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h5 class="font-serif fw-bold text-dark fs-4 mb-2 text-center">Choose Lining & Opacity</h5>
+            <p class="small text-muted mb-0 text-center">Select 100% Total Blackout, Thermal Satin, or Unlined Natural Sheer tailored to your room's lighting goals.</p>
+            <div class="text-center mt-3 small text-warning fw-semibold font-modern">Preview in 3D Visualizer &rarr;</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     6. BESTSELLING DRAPERY GRID (3D PRODUCT CARDS WITH SHIMMER GLARE)
+     ========================================================================== -->
+<section class="py-5 bg-white border-top border-bottom">
+  <div class="container py-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 reveal-on-scroll">
+      <div>
+        <span class="text-uppercase fw-bold small text-warning font-modern" style="letter-spacing: 0.14em;">Client Favorites</span>
+        <h2 class="display-6 fw-bold font-serif mb-0 text-dark">Top-Rated Designer Drapes</h2>
+      </div>
+      <a href="{% url 'products:product_list' %}?sort=popular" class="btn btn-luxe-dark mt-3 mt-md-0">
+        Browse All Bestsellers <i class="fas fa-fire text-warning ms-1"></i>
+      </a>
+    </div>
+
+    <div class="row g-4">
+      {% for product in bestsellers|slice:":4" %}
+        <div class="col-lg-3 col-md-6 reveal-scale stagger-{{ forloop.counter }}">
+          <div class="product-card tilt-card-3d" data-max-tilt="10" data-scale="1.02">
+            
+            <div class="product-image-wrapper">
+              <span class="badge-tag badge-bestseller">Bestseller</span>
+              {% if product.discount_percent > 0 %}
+                <span class="badge-tag badge-sale" style="top: 45px;">-{{ product.discount_percent }}% OFF</span>
+              {% endif %}
+
+              <img src="{{ product.display_image }}" alt="{{ product.name }}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{% static 'images/product-placeholder.jpg' %}';">
+              
+              <div class="product-blackout-pill">
+                <i class="fas fa-adjust text-warning"></i>
+                <span>{{ product.blackout_percentage }}% Blackout</span>
+              </div>
+            </div>
+
+            <div class="product-body">
+              <a href="{% url 'products:category_detail' slug=product.category.slug %}" class="product-category-link">
+                {{ product.category.name }}
+              </a>
+              <a href="{% url 'products:product_detail' slug=product.slug %}" class="product-title">
+                {{ product.name }}
+              </a>
+
+              <div class="product-rating">
+                {% for i in "12345" %}
+                  <i class="fas fa-star"></i>
+                {% endfor %}
+                <span class="rating-count ms-1 text-muted">({{ product.review_count|default:"18" }})</span>
+              </div>
+
+              <div class="product-price-wrapper">
+                <div>
+                  <span class="price-current">₹{{ product.current_price }}</span>
+                  {% if product.discount_price and product.discount_price < product.base_price %}
+                    <span class="price-original">₹{{ product.base_price }}</span>
+                  {% endif %}
+                </div>
+                <a href="{% url 'products:product_detail' slug=product.slug %}" class="btn btn-sm btn-luxe-outline-gold py-1 px-3">
+                  Customize
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     7. CLIENT TESTIMONIALS (3D PERSPECTIVE CARDS)
+     ========================================================================== -->
+<section class="py-5 my-4">
+  <div class="container py-3">
+    <div class="text-center max-w-700 mx-auto mb-5 reveal-on-scroll">
+      <span class="text-uppercase fw-bold small text-warning font-modern" style="letter-spacing: 0.14em;">Discerning Client Reviews</span>
+      <h2 class="display-6 fw-bold font-serif text-dark">Adored by Architects & Discerning Homeowners</h2>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6 reveal-on-scroll stagger-1">
+        <div class="testimonial-card-3d tilt-card-3d" data-max-tilt="8">
+          <div class="product-rating mb-3">
+            <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i>
+          </div>
+          <p class="text-muted mb-4 fst-italic font-sans">
+            "The Heritage Emerald Velvet curtains turned our high-ceiling dining room into an absolute sanctuary. The fabric weight and pinch pleats look like a ₹50,000 bespoke designer commission."
+          </p>
+          <div class="d-flex align-items-center gap-3 pt-3 border-top mt-auto">
+            <div class="rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-family: var(--font-modern);">
+              SM
+            </div>
+            <div>
+              <div class="fw-bold text-dark font-sans">Sophia Montgomery</div>
+              <div class="small text-muted">Beverly Hills, CA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6 reveal-on-scroll stagger-2">
+        <div class="testimonial-card-3d tilt-card-3d" data-max-tilt="8">
+          <div class="product-rating mb-3">
+            <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i>
+          </div>
+          <p class="text-muted mb-4 fst-italic font-sans">
+            "The 100% Blackout drapes completely changed my sleep quality. Street lights used to leak into our bedroom all night, but now it is pure, pitch-black comfort."
+          </p>
+          <div class="d-flex align-items-center gap-3 pt-3 border-top mt-auto">
+            <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-family: var(--font-modern);">
+              AP
+            </div>
+            <div>
+              <div class="fw-bold text-dark font-sans">Arthur Pendelton</div>
+              <div class="small text-muted">New York, NY</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6 reveal-on-scroll stagger-3">
+        <div class="testimonial-card-3d tilt-card-3d" data-max-tilt="8">
+          <div class="product-rating mb-3">
+            <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i>
+          </div>
+          <p class="text-muted mb-4 fst-italic font-sans">
+            "Custom sizing was delivered to the exact millimeter. The online calculator made figuring out pleat fullness effortless. Highly recommend LuxeDrape!"
+          </p>
+          <div class="d-flex align-items-center gap-3 pt-3 border-top mt-auto">
+            <div class="rounded-circle bg-success text-white fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-family: var(--font-modern);">
+              GD
+            </div>
+            <div>
+              <div class="fw-bold text-dark font-sans">Genevieve Dupont</div>
+              <div class="small text-muted">Interior Architect, SF</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     8. VIP ATELIER CONCIERGE CLUB (3D SHIMMER CARD)
+     ========================================================================== -->
+<section class="py-5 my-4">
+  <div class="container">
+    <div class="vip-card-3d reveal-scale">
+      <div class="vip-card-3d-inner">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-7">
+            <span class="badge bg-warning text-dark fw-bold font-modern mb-3" style="letter-spacing: 0.1em;">HAUTE ATELIER PRIVILEGE</span>
+            <h2 class="display-6 fw-bold font-serif text-white mb-2">Join the LuxeDrape Concierge Club</h2>
+            <p class="text-light opacity-90 lead fs-6 font-sans mb-0">
+              Receive exclusive seasonal fabric releases, complimentary swatch sample books, and <strong>15% OFF</strong> your first bespoke drapery commission.
+            </p>
+          </div>
+          <div class="col-lg-5">
+            <form id="vipConciergeForm" class="d-flex flex-column flex-sm-row gap-2">
+              <input type="email" class="form-control vip-input-pill" placeholder="Enter your email address..." required>
+              <button type="submit" class="btn btn-luxe-gold text-nowrap shadow-lg">
+                Join Club <i class="fas fa-arrow-right ms-1"></i>
+              </button>
+            </form>
+            <div class="small text-light opacity-60 mt-2 font-sans">
+              <i class="fas fa-lock me-1"></i> We respect your privacy. Unsubscribe anytime.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- 3D Scroll & Interactive Engine JS -->
+<script src="{% static 'js/home_3d.js' %}"></script>
+{% endblock %}

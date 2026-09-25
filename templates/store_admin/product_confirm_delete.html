@@ -1,0 +1,28 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block page_title %}Delete Product{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="admin-card p-5 text-center">
+      <div class="feature-icon-circle mx-auto bg-danger bg-opacity-10 text-danger mb-3" style="width: 70px; height: 70px; font-size: 2rem;">
+        <i class="fas fa-trash-alt"></i>
+      </div>
+      <h4 class="fw-bold font-serif mb-2">Delete Curtain Product?</h4>
+      <p class="text-muted small mb-4">
+        Are you sure you want to permanently remove <strong>"{{ product.name }}"</strong> (₹{{ product.current_price }}) from the store catalog?
+      </p>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{% url 'store_admin:products_list' %}" class="btn btn-outline-dark rounded-pill px-4">Cancel</a>
+          <button type="submit" class="btn btn-danger rounded-pill px-4">Confirm Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

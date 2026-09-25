@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Curtain Measurement & Sizing Calculator | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Header -->
+  <div class="text-center max-w-700 mx-auto mb-5">
+    <span class="text-uppercase fw-bold small text-warning letter-spacing-1">Precision Fit</span>
+    <h1 class="display-5 fw-bold font-serif mb-3">Curtain Measurement Calculator</h1>
+    <p class="text-muted lead">
+      Calculate the exact number of panels, pleat fullness ratio, and fabric yardage required for your window track or rod.
+    </p>
+  </div>
+
+  <div class="row g-5">
+    <!-- Calculator Form Column -->
+    <div class="col-lg-6">
+      <div class="customizer-panel h-100">
+        <h4 class="fw-bold mb-4 font-serif"><i class="fas fa-calculator text-warning me-2"></i> Window Dimensions Calculator</h4>
+        
+        <form id="standaloneGuideForm">
+          <!-- Step 1: Track / Rod Width -->
+          <div class="mb-4">
+            <label class="form-label fw-bold" for="guideTrackWidth">
+              1. Curtain Track / Rod Total Width (cm)
+            </label>
+            <div class="input-group">
+              <input type="number" class="form-control form-control-lg" id="guideTrackWidth" value="220" min="50" max="1000" required>
+              <span class="input-group-text">cm</span>
+            </div>
+            <div class="form-text">Measure the full width of your track or pole, excluding decorative end finials.</div>
+          </div>
+
+          <!-- Step 2: Drop / Length -->
+          <div class="mb-4">
+            <label class="form-label fw-bold" for="guideWindowDrop">
+              2. Desired Drop / Height (cm)
+            </label>
+            <div class="input-group">
+              <input type="number" class="form-control form-control-lg" id="guideWindowDrop" value="245" min="50" max="600" required>
+              <span class="input-group-text">cm</span>
+            </div>
+            <div class="form-text">Measure from top of track/pole to sill, below sill, or floor.</div>
+          </div>
+
+          <!-- Step 3: Header Fullness -->
+          <div class="mb-4">
+            <label class="form-label fw-bold" for="guideFullness">
+              3. Pleat Style & Fullness
+            </label>
+            <select class="form-select form-select-lg" id="guideFullness">
+              <option value="1.5">Standard Gather (1.5x Fullness)</option>
+              <option value="2.0" selected>Classic Full Drape (2.0x Fullness - Recommended)</option>
+              <option value="2.5">Opulent Luxury Heavy Pleats (2.5x Fullness)</option>
+            </select>
+            <div class="form-text">Fullness determines the density and deep waves of the curtain when closed.</div>
+          </div>
+
+          <button type="submit" class="btn btn-gold btn-lg w-100 mt-3">
+            <i class="fas fa-magic me-2"></i> Calculate Curtain Specs
+          </button>
+        </form>
+
+        <!-- Calculation Results Box -->
+        <div id="guideResultBox" class="mt-4 p-4 rounded-3 bg-light border border-warning" style="display: none;">
+          <h5 class="fw-bold font-serif text-dark mb-3"><i class="fas fa-check-circle text-success me-2"></i> Recommended Specifications:</h5>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="small text-muted">Recommended Panels</div>
+              <div class="fs-5 fw-bold text-dark" id="resultPanelsCount">-</div>
+            </div>
+            <div class="col-6">
+              <div class="small text-muted">Total Gathered Width</div>
+              <div class="fs-5 fw-bold text-dark" id="resultTotalWidth">-</div>
+            </div>
+            <div class="col-6">
+              <div class="small text-muted">Finished Drop Length</div>
+              <div class="fs-5 fw-bold text-dark" id="resultRecommendedDrop">-</div>
+            </div>
+            <div class="col-6">
+              <div class="small text-muted">Estimated Fabric Yardage</div>
+              <div class="fs-5 fw-bold text-dark text-warning" id="resultYardage">-</div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-top d-flex gap-2">
+            <a href="{% url 'products:product_list' %}" class="btn btn-navy btn-sm rounded-pill px-4">
+              Browse Compatible Fabrics
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sizing Visual Guide Column -->
+    <div class="col-lg-6">
+      <div class="bg-white p-4 rounded-4 border shadow-sm">
+        <h4 class="fw-bold font-serif mb-4"><i class="fas fa-info-circle text-warning me-2"></i> Professional Hanging Styles</h4>
+        
+        <div class="d-flex gap-3 mb-4 p-3 bg-light rounded-3">
+          <div class="fs-2 text-warning"><i class="fas fa-arrows-alt-v"></i></div>
+          <div>
+            <h6 class="fw-bold mb-1">1. Hover / Floating (1-2 cm above floor)</h6>
+            <p class="small text-muted mb-0">Clean and contemporary. Avoids dust accumulation and lets curtains swing freely without touching floorboards.</p>
+          </div>
+        </div>
+
+        <div class="d-flex gap-3 mb-4 p-3 bg-light rounded-3">
+          <div class="fs-2 text-warning"><i class="fas fa-hand-holding-water"></i></div>
+          <div>
+            <h6 class="fw-bold mb-1">2. Gentle Breaking / Kiss (Touches floor)</h6>
+            <p class="small text-muted mb-0">Add 1-2 cm to your measurement. The hem fabric breaks gently upon the floor for a tailored, elegant look.</p>
+          </div>
+        </div>
+
+        <div class="d-flex gap-3 mb-4 p-3 bg-light rounded-3">
+          <div class="fs-2 text-warning"><i class="fas fa-water"></i></div>
+          <div>
+            <h6 class="fw-bold mb-1">3. Dramatic Puddle (5-10 cm pooling)</h6>
+            <p class="small text-muted mb-0">Best suited for heavyweight velvet and pure linen drapes. Creates a romantic, opulent chateau ambiance.</p>
+          </div>
+        </div>
+
+        <div class="p-3 border border-warning rounded-3 bg-warning bg-opacity-10 mt-4">
+          <div class="fw-bold text-dark mb-1"><i class="fas fa-lightbulb text-warning me-2"></i> Designer Pro Tip:</div>
+          <p class="small text-muted mb-0">
+            Mount your curtain rod <strong>15–20 cm above the window frame</strong> and extend <strong>15–25 cm past each side</strong>. This visually doubles ceiling height and allows maximum daylight into the room!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/calculator.js' %}"></script>
+{% endblock %}

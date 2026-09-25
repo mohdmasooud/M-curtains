@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LuxeDrape | Bespoke Luxury Curtains & Haute Drapery{% endblock %}</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://img.icons8.com/color/48/curtains.png">
+  
+  <!-- Modern Luxury Google Fonts: Cormorant Garamond, Outfit, Plus Jakarta Sans, Cinzel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Custom Luxury Theme CSS -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Luxury Announcement & Concierge Bar -->
+  <div class="top-bar">
+    <div class="container-fluid px-3 px-xxl-5 px-xl-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span class="top-bar-badge d-none d-md-inline-block">HAUTE ATELIER</span>
+        <span>
+          Spring Drapery Event: Use code <strong class="text-warning">LUXE20</strong> for 20% OFF custom orders over ₹2,000
+        </span>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="tel:+18005893727" class="d-none d-lg-inline-block"><i class="fas fa-phone-alt me-1 text-warning"></i> +1 (800) 589-3727</a>
+        <span class="opacity-25 d-none d-lg-inline-block">|</span>
+        <a href="{% url 'orders:track_order' %}"><i class="fas fa-shipping-fast me-1 text-warning"></i> Track Order</a>
+        <span class="opacity-25">|</span>
+        <a href="{% url 'core:measurement_guide' %}"><i class="fas fa-ruler-combined me-1 text-warning"></i> Sizing Guide</a>
+        {% if user.is_staff %}
+          <span class="opacity-25">|</span>
+          <a href="{% url 'store_admin:dashboard' %}" class="badge bg-warning text-dark fw-bold"><i class="fas fa-crown me-1"></i> Admin Portal</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Haute Navbar Header -->
+  <header class="sticky-top">
+    <nav class="navbar navbar-expand-xl luxe-navbar">
+      <div class="container-fluid px-2 px-sm-3 px-xl-4 px-xxl-5">
+        
+        <!-- Brand Logo with European Haute Drapery Aesthetics -->
+        <a class="brand-logo-container" href="{% url 'core:home' %}">
+          <div class="brand-logo-title">
+            <i class="fas fa-layer-group text-warning"></i>
+            <span>LUXE<span class="gold-accent">DRAPE</span></span>
+          </div>
+          <div class="brand-logo-subtitle">Atelier & Bespoke Drapery</div>
+        </a>
+
+        <!-- Mobile Nav Toggler -->
+        <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Links, Mega Menu & Search -->
+        <div class="collapse navbar-collapse" id="navbarMain">
+          <ul class="navbar-nav mx-auto mb-2 mb-xl-0 align-items-xl-center">
+            
+            <li class="nav-item">
+              <a class="nav-link nav-link-luxe {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'core:home' %}">Home</a>
+            </li>
+
+            <!-- Luxury Collections Mega Menu -->
+            <li class="nav-item dropdown position-static">
+              <a class="nav-link nav-link-luxe dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Collections
+              </a>
+              <div class="dropdown-menu mega-dropdown-menu">
+                <div class="row g-4">
+                  <!-- Col 1: Fabrics -->
+                  <div class="col-md-4">
+                    <div class="mega-menu-heading">By Fabric Line</div>
+                    {% for cat in nav_categories|slice:":4" %}
+                      <a href="{% url 'products:category_detail' slug=cat.slug %}" class="mega-menu-item">
+                        <i class="fas fa-chevron-right text-warning me-1 small opacity-75"></i> {{ cat.name }}
+                      </a>
+                    {% endfor %}
+                    <a href="{% url 'products:product_list' %}" class="mega-menu-item text-warning fw-bold mt-2">
+                      View All Fabrics &rarr;
+                    </a>
+                  </div>
+
+                  <!-- Col 2: Function & Rooms -->
+                  <div class="col-md-4">
+                    <div class="mega-menu-heading">By Light Control & Room</div>
+                    <a href="{% url 'products:product_list' %}?blackout=blackout" class="mega-menu-item">
+                      <i class="fas fa-moon text-warning me-1 small opacity-75"></i> 100% Total Blackout
+                    </a>
+                    <a href="{% url 'products:product_list' %}?blackout=sheer" class="mega-menu-item">
+                      <i class="fas fa-sun text-warning me-1 small opacity-75"></i> Translucent Sheer Voile
+                    </a>
+                    <a href="{% url 'products:product_list' %}?room=living-room" class="mega-menu-item">
+                      <i class="fas fa-couch text-warning me-1 small opacity-75"></i> Living Room Drapes
+                    </a>
+                    <a href="{% url 'products:product_list' %}?room=master-bedroom" class="mega-menu-item">
+                      <i class="fas fa-bed text-warning me-1 small opacity-75"></i> Master Bedroom Sanctuary
+                    </a>
+                  </div>
+
+                  <!-- Col 3: Visual Featured Banner -->
+                  <div class="col-md-4">
+                    <div class="mega-banner-card">
+                      <span class="badge bg-warning text-dark align-self-start mb-2 small">New Season</span>
+                      <h6 class="text-white fw-bold mb-1 font-serif">Royal Silk Velvet</h6>
+                      <p class="small text-light opacity-75 mb-2" style="font-size: 0.75rem;">Heavy 420 GSM acoustic drape with sound dampening.</p>
+                      <a href="{% url 'products:product_list' %}" class="btn btn-sm btn-gold rounded-pill px-3 py-1" style="font-size: 0.75rem;">
+                        Explore Catalog
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <!-- Interactive Tools -->
+            <li class="nav-item">
+              <a class="nav-link nav-link-luxe {% if request.resolver_match.url_name == 'room_visualizer' %}active{% endif %}" href="{% url 'core:room_visualizer' %}">
+                <i class="fas fa-vr-cardboard text-warning me-1"></i> Visualizer
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link nav-link-luxe {% if request.resolver_match.url_name == 'measurement_guide' %}active{% endif %}" href="{% url 'core:measurement_guide' %}">
+                <i class="fas fa-calculator text-warning me-1"></i> Calculator
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link nav-link-luxe {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'core:about' %}">Atelier</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link nav-link-luxe {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'core:contact' %}">Showrooms</a>
+            </li>
+          </ul>
+
+          <!-- Expandable Live Instant Search -->
+          <div class="navbar-search-wrapper me-2 d-none d-lg-block">
+            <i class="fas fa-search navbar-search-icon"></i>
+            <input type="text" class="navbar-search-input" id="navbarSearchInput" placeholder="Search...">
+            <!-- Autocomplete Results Dropdown -->
+            <div id="navbarSearchResults" class="search-results-dropdown"></div>
+          </div>
+
+          <!-- Header Action Pills (Cart & Account) -->
+          <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-auto ms-xl-2">
+            
+            <!-- Shopping Bag Pill -->
+            <a href="{% url 'cart:cart_detail' %}" class="nav-action-pill" title="Shopping Bag">
+              <i class="fas fa-shopping-bag text-warning"></i>
+              <span>Bag</span>
+              <span class="nav-cart-badge" id="cartCountBadge">{{ cart_total_items|default:"0" }}</span>
+            </a>
+
+            <!-- Client Account Dropdown -->
+            {% if user.is_authenticated %}
+              <div class="dropdown flex-shrink-0">
+                <a href="#" class="nav-action-pill dropdown-toggle no-caret" data-bs-toggle="dropdown" title="Client Account: {{ user.get_full_name|default:user.username }}">
+                  <i class="fas fa-user-circle text-dark"></i>
+                  <span class="user-display-name">{{ user.get_full_name|default:user.first_name|default:user.username }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2">
+                  <li class="px-3 py-2 border-bottom">
+                    <div class="fw-bold text-dark">{{ user.get_full_name|default:user.first_name|default:user.username }}</div>
+                    <div class="small text-muted" style="font-size: 0.75rem;">{{ user.email }}</div>
+                  </li>
+                  {% if user.is_staff %}
+                    <li>
+                      <a class="dropdown-item py-2 text-warning fw-semibold" href="{% url 'store_admin:dashboard' %}">
+                        <i class="fas fa-crown me-2"></i> Admin Management Portal
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                  {% endif %}
+                  <li><a class="dropdown-item py-2" href="{% url 'accounts:dashboard' %}"><i class="fas fa-tachometer-alt me-2 text-muted"></i> Client Dashboard</a></li>
+                  <li><a class="dropdown-item py-2" href="{% url 'orders:order_history' %}"><i class="fas fa-box-open me-2 text-muted"></i> My Drapery Orders</a></li>
+                  <li><a class="dropdown-item py-2" href="{% url 'accounts:profile' %}"><i class="fas fa-user-cog me-2 text-muted"></i> Profile Settings</a></li>
+                  <li><a class="dropdown-item py-2" href="{% url 'accounts:address_list' %}"><i class="fas fa-map-marker-alt me-2 text-muted"></i> Saved Addresses</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item py-2 text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a></li>
+                </ul>
+              </div>
+            {% else %}
+              <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-luxe-outline-gold py-1 px-2 py-xl-2 px-xl-3 text-nowrap flex-shrink-0">
+                <i class="fas fa-sign-in-alt me-1"></i> Sign In
+              </a>
+              <a href="{% url 'accounts:register' %}" class="btn btn-sm btn-luxe-gold py-1 px-2 py-xl-2 px-xl-3 text-nowrap flex-shrink-0">
+                New User
+              </a>
+            {% endif %}
+
+          </div>
+
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Flash Notification Alerts -->
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-4" role="alert">
+          <div class="d-flex align-items-center">
+            {% if message.tags == 'success' %}
+              <i class="fas fa-check-circle fs-5 me-2 text-success"></i>
+            {% elif message.tags == 'danger' or message.tags == 'error' %}
+              <i class="fas fa-exclamation-circle fs-5 me-2 text-danger"></i>
+            {% elif message.tags == 'warning' %}
+              <i class="fas fa-exclamation-triangle fs-5 me-2 text-warning"></i>
+            {% else %}
+              <i class="fas fa-info-circle fs-5 me-2 text-info"></i>
+            {% endif %}
+            <div class="fw-semibold small">{{ message }}</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content Block -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Haute Luxury Footer -->
+  <footer class="luxe-footer">
+    <div class="container">
+      <div class="row g-5">
+        
+        <!-- Brand & Manifesto -->
+        <div class="col-lg-4 col-md-6">
+          <a class="brand-logo-container text-white mb-3" href="{% url 'core:home' %}">
+            <div class="brand-logo-title text-white">
+              <i class="fas fa-layer-group text-warning fs-4"></i>
+              <span>LUXE<span class="gold-accent">DRAPE</span></span>
+            </div>
+            <div class="brand-logo-subtitle" style="color: var(--gold-light);">Atelier & Bespoke Drapery</div>
+          </a>
+          <p class="small text-light opacity-75 pe-lg-4">
+            Handcrafted architectural curtains engineered for timeless interior aesthetics, acoustic serenity, and optimal daylight control. Precision tailored to your exact window dimensions.
+          </p>
+          <div class="d-flex gap-2 mt-4">
+            <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 38px; height: 38px;"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 38px; height: 38px;"><i class="fab fa-pinterest-p"></i></a>
+            <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 38px; height: 38px;"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 38px; height: 38px;"><i class="fab fa-houzz"></i></a>
+          </div>
+        </div>
+
+        <!-- Collections -->
+        <div class="col-lg-2 col-md-6 col-6">
+          <h5 class="footer-title">Collections</h5>
+          <ul class="footer-links">
+            {% for cat in nav_categories|slice:":5" %}
+              <li><a href="{% url 'products:category_detail' slug=cat.slug %}">{{ cat.name }}</a></li>
+            {% endfor %}
+            <li><a href="{% url 'products:product_list' %}" class="text-warning">All Collections &rarr;</a></li>
+          </ul>
+        </div>
+
+        <!-- Design & Sizing Tools -->
+        <div class="col-lg-3 col-md-6 col-6">
+          <h5 class="footer-title">Interactive Atelier</h5>
+          <ul class="footer-links">
+            <li><a href="{% url 'core:room_visualizer' %}"><i class="fas fa-vr-cardboard text-warning me-1"></i> Room Drapery Visualizer</a></li>
+            <li><a href="{% url 'core:measurement_guide' %}"><i class="fas fa-calculator text-warning me-1"></i> Custom Sizing Calculator</a></li>
+            <li><a href="{% url 'orders:track_order' %}"><i class="fas fa-shipping-fast text-warning me-1"></i> Live Order Tracker</a></li>
+            <li><a href="{% url 'core:about' %}">Fabrics & Craftsmanship</a></li>
+            <li><a href="{% url 'core:contact' %}">Book Showroom Video Call</a></li>
+          </ul>
+        </div>
+
+        <!-- Concierge & Lookbook Newsletter -->
+        <div class="col-lg-3 col-md-6">
+          <h5 class="footer-title">Design Lookbook</h5>
+          <p class="small text-light opacity-75">Receive exclusive haute interior styling lookbooks and seasonal private sales.</p>
+          <form class="mt-3" onsubmit="event.preventDefault(); alert('Thank you for subscribing to the LuxeDrape lookbook!');">
+            <div class="input-group">
+              <input type="email" class="form-control form-control-sm border-0 rounded-start-pill ps-3" placeholder="Enter your email" required>
+              <button class="btn btn-luxe-gold btn-sm rounded-end-pill px-3" type="submit">Join</button>
+            </div>
+          </form>
+          <div class="mt-3 small text-light opacity-75">
+            <i class="fas fa-lock text-warning me-1"></i> 100% Privacy. Unsubscribe anytime.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div>
+          &copy; 2026 LuxeDrape Artisans Inc. All rights reserved. Handcrafted with pride.
+        </div>
+        <div class="d-flex gap-3 small">
+          <a href="{% url 'core:about' %}" class="text-secondary text-decoration-none">Terms & Conditions</a>
+          <span>•</span>
+          <a href="{% url 'core:about' %}" class="text-secondary text-decoration-none">Privacy Policy</a>
+          <span>•</span>
+          <a href="{% url 'core:contact' %}" class="text-secondary text-decoration-none">Showrooms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Main Custom JS -->
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

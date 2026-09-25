@@ -1,0 +1,1 @@
+# Curtain Shop Django Project

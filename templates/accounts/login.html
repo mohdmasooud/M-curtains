@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In | LuxeDrape Atelier{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card-master">
+    <div class="row g-0">
+      
+      <!-- Left Visual Branding Panel (Hidden on extra small mobile, responsive on tablet/desktop) -->
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="auth-visual-panel">
+          <div class="auth-visual-bg" style="background-image: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80');"></div>
+          <div class="auth-visual-overlay"></div>
+          
+          <div class="auth-visual-content">
+            <div>
+              <span class="auth-badge">
+                <i class="fas fa-crown text-warning"></i> Atelier Member
+              </span>
+              <h2 class="display-6 fw-bold font-serif mb-3 text-white">
+                Bespoke Drapery Tailored for Modern Living
+              </h2>
+              <p class="small text-light opacity-75 mb-4">
+                Access your precision measurement profiles, live order tracking, and private swatch lookbooks.
+              </p>
+
+              <!-- Feature Highlights -->
+              <div class="auth-visual-feature">
+                <i class="fas fa-ruler-combined"></i>
+                <div class="small">
+                  <strong>Custom Sizing</strong>
+                  <div class="opacity-75">Tailored to your exact window dimensions</div>
+                </div>
+              </div>
+              <div class="auth-visual-feature">
+                <i class="fas fa-moon"></i>
+                <div class="small">
+                  <strong>100% Total Blackout</strong>
+                  <div class="opacity-75">Triple-weave acoustic & thermal serenity</div>
+                </div>
+              </div>
+              <div class="auth-visual-feature">
+                <i class="fas fa-shield-alt"></i>
+                <div class="small">
+                  <strong>5-Year Warranty</strong>
+                  <div class="opacity-75">Guaranteed artisanal craftsmanship</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Client Quote Card -->
+            <div class="auth-testimonial-box">
+              <div class="d-flex align-items-center gap-1 text-warning small mb-2">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                <span class="text-white small ms-2 opacity-75">4.9 / 5 Rating</span>
+              </div>
+              <p class="small text-light mb-0 fst-italic">
+                "LuxeDrape transformed our penthouse master suite. The motorized linen wave is breathtaking."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form Panel -->
+      <div class="col-lg-7">
+        <div class="auth-form-panel">
+          
+          <div class="auth-form-header">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-3 py-1 font-modern fw-bold" style="font-size: 0.72rem;">
+                SECURE CLIENT PORTAL
+              </span>
+            </div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">
+              Sign in to your LuxeDrape client account.
+            </p>
+          </div>
+
+          {% if form.errors %}
+            <div class="alert alert-danger rounded-3 py-2 px-3 small border-0 shadow-sm mb-4">
+              <i class="fas fa-exclamation-circle me-1"></i> Invalid username or password. Please check your credentials and try again.
+            </div>
+          {% endif %}
+
+          <form method="POST" id="loginForm" novalidate>
+            {% csrf_token %}
+            
+            <!-- Username Input -->
+            <div class="auth-field-group">
+              <label class="auth-field-label" for="loginUsernameInput">Username or Email</label>
+              <div class="auth-input-wrapper">
+                <i class="fas fa-user auth-input-icon"></i>
+                {{ form.username }}
+              </div>
+            </div>
+
+            <!-- Password Input with Show/Hide Toggle -->
+            <div class="auth-field-group">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="auth-field-label mb-0" for="loginPasswordInput">Password</label>
+                <a href="javascript:void(0);" onclick="alert('Password reset link has been dispatched to your verified email address.');" class="small text-muted text-decoration-none" style="font-size: 0.78rem;">
+                  Forgot password?
+                </a>
+              </div>
+              <div class="auth-input-wrapper">
+                <i class="fas fa-lock auth-input-icon"></i>
+                {{ form.password }}
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPasswordInput', this)" title="Show/Hide Password">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Remember Me & Options -->
+            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="rememberMeCheckbox" checked>
+                <label class="form-check-label small text-muted" for="rememberMeCheckbox">
+                  Keep me signed in on this device
+                </label>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="auth-submit-btn">
+              <span>Sign In</span>
+              <i class="fas fa-arrow-right small"></i>
+            </button>
+          </form>
+
+          <!-- Switch to Registration -->
+          <div class="auth-footer-link">
+            New to LuxeDrape? <a href="{% url 'accounts:register' %}">New User &rarr;</a>
+          </div>
+
+          <!-- Trust & Encryption Footer -->
+          <div class="text-center mt-3 small text-muted" style="font-size: 0.75rem;">
+            <i class="fas fa-shield-halved text-success me-1"></i> End-to-End 256-Bit SSL Encrypted & Privacy Assured
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+</script>
+{% endblock %}

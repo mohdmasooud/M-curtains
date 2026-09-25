@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+          <h3 class="fw-bold font-serif mb-0">{{ title }}</h3>
+          <a href="{% url 'accounts:address_list' %}" class="btn btn-sm btn-outline-dark rounded-pill">
+            <i class="fas fa-arrow-left me-1"></i> Back to Addresses
+          </a>
+        </div>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Recipient Full Name *</label>
+              {{ form.recipient_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Phone Number *</label>
+              {{ form.phone_number }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Street Address *</label>
+              {{ form.street_address }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Apartment, Suite, Unit</label>
+              {{ form.apartment_suite }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">City *</label>
+              {{ form.city }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">State / Province *</label>
+              {{ form.state }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Postal Code *</label>
+              {{ form.postal_code }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Country *</label>
+              {{ form.country }}
+            </div>
+            <div class="col-12">
+              <div class="form-check mt-2">
+                {{ form.is_default }}
+                <label class="form-check-label small fw-semibold" for="{{ form.is_default.id_for_label }}">
+                  Set as default shipping address
+                </label>
+              </div>
+            </div>
+            <div class="col-12 mt-4">
+              <button type="submit" class="btn btn-gold btn-lg w-100">
+                <i class="fas fa-save me-2"></i> Save Shipping Address
+              </button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

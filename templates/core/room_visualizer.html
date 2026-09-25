@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Interactive Room Drapery Visualizer | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Header -->
+  <div class="text-center max-w-700 mx-auto mb-4">
+    <span class="text-uppercase fw-bold small text-warning letter-spacing-1">Virtual Studio</span>
+    <h1 class="display-5 fw-bold font-serif mb-2">Room Drapery Visualizer</h1>
+    <p class="text-muted">
+      Select a virtual room setting, test drape fabrics, and toggle daylight / nighttime atmosphere in real time.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Visualizer Canvas Column -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden position-relative" style="min-height: 520px; background: #0f172a;">
+        <!-- Base Room Scene -->
+        <img id="visualizerRoomScene" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80" alt="Virtual Room Scene" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover;">
+        
+        <!-- Day / Night Ambience Filter Overlay -->
+        <div id="roomLightingOverlay" class="position-absolute top-0 start-0 w-100 h-100" style="pointer-events: none; transition: background 0.5s ease;"></div>
+
+        <!-- Simulated Curtains Over Window Left & Right -->
+        <div id="visualizerCurtainLeft" class="position-absolute" style="top: 15%; left: 22%; width: 14%; height: 68%; background-color: #0F4C3A; opacity: 0.92; border-radius: 4px; box-shadow: inset 4px 0 10px rgba(0,0,0,0.4), 6px 6px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; border-right: 2px solid rgba(255,255,255,0.1);"></div>
+        <div id="visualizerCurtainRight" class="position-absolute" style="top: 15%; right: 22%; width: 14%; height: 68%; background-color: #0F4C3A; opacity: 0.92; border-radius: 4px; box-shadow: inset -4px 0 10px rgba(0,0,0,0.4), -6px 6px 15px rgba(0,0,0,0.3); transition: all 0.4s ease; border-left: 2px solid rgba(255,255,255,0.1);"></div>
+
+        <!-- Canvas Floating Controls Badge -->
+        <div class="position-absolute bottom-0 start-0 end-0 p-3 bg-dark bg-opacity-75 d-flex justify-content-between align-items-center text-white">
+          <div class="d-flex align-items-center gap-3">
+            <span class="small fw-semibold"><i class="fas fa-layer-group text-warning me-1"></i> Fabric: <span id="selectedFabricName">Heritage Emerald Silk Velvet</span></span>
+            <span class="badge bg-warning text-dark" id="selectedFabricPrice">₹129.00</span>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="timeOfDayToggle">
+            <label class="form-check-label small text-white" for="timeOfDayToggle"><i class="fas fa-moon text-warning me-1"></i> Night Mode</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room Scene Switcher Buttons -->
+      <div class="d-flex justify-content-center gap-2 mt-3">
+        <button class="btn btn-sm btn-navy scene-selector-btn active px-3" data-scene="living">
+          <i class="fas fa-couch me-1"></i> Modern Living Room
+        </button>
+        <button class="btn btn-sm btn-outline-secondary scene-selector-btn px-3" data-scene="bedroom">
+          <i class="fas fa-bed me-1"></i> Master Suite
+        </button>
+        <button class="btn btn-sm btn-outline-secondary scene-selector-btn px-3" data-scene="dining">
+          <i class="fas fa-utensils me-1"></i> Dining Salon
+        </button>
+      </div>
+    </div>
+
+    <!-- Fabric Swatches & Customization Sidebar -->
+    <div class="col-lg-4">
+      <div class="customizer-panel h-100">
+        <h5 class="fw-bold font-serif mb-3"><i class="fas fa-palette text-warning me-2"></i> Select Curtain Fabric</h5>
+        <p class="small text-muted mb-4">Click any swatch to project color and opacity onto the window canvas in real time.</p>
+
+        <!-- Fabric Palette List -->
+        <div class="d-flex flex-column gap-3 mb-4">
+          <button class="spec-selector-btn fabric-selector-btn active d-flex align-items-center gap-3" data-color="#0F4C3A" data-opacity="0.95" data-name="Heritage Emerald Silk Velvet" data-price="129.00" data-slug="heritage-emerald-silk-velvet-drape">
+            <span class="color-swatch-circle" style="background-color: #0F4C3A; width: 32px; height: 32px;"></span>
+            <div class="text-start">
+              <div class="fw-bold text-dark small">Imperial Emerald Velvet</div>
+              <div class="text-muted" style="font-size: 0.75rem;">420 GSM Velvet • 95% Blackout</div>
+            </div>
+            <span class="ms-auto fw-bold text-dark small">₹129</span>
+          </button>
+
+          <button class="spec-selector-btn fabric-selector-btn d-flex align-items-center gap-3" data-color="#E3DAC9" data-opacity="0.75" data-name="Nordic Pure Washed Linen" data-price="115.00" data-slug="nordic-pure-washed-linen-panel">
+            <span class="color-swatch-circle" style="background-color: #E3DAC9; width: 32px; height: 32px;"></span>
+            <div class="text-start">
+              <div class="fw-bold text-dark small">French Washed Flax Linen</div>
+              <div class="text-muted" style="font-size: 0.75rem;">100% Normandy Linen • 40% Filter</div>
+            </div>
+            <span class="ms-auto fw-bold text-dark small">₹115</span>
+          </button>
+
+          <button class="spec-selector-btn fabric-selector-btn d-flex align-items-center gap-3" data-color="#1E293B" data-opacity="1.0" data-name="Midnight Eclipse 100% Blackout" data-price="109.00" data-slug="midnight-eclipse-100-total-blackout">
+            <span class="color-swatch-circle" style="background-color: #1E293B; width: 32px; height: 32px;"></span>
+            <div class="text-start">
+              <div class="fw-bold text-dark small">Midnight Slate Blackout</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Triple-Weave • 100% Blackout</div>
+            </div>
+            <span class="ms-auto fw-bold text-dark small">₹109</span>
+          </button>
+
+          <button class="spec-selector-btn fabric-selector-btn d-flex align-items-center gap-3" data-color="#F8F9FA" data-opacity="0.35" data-name="Aura Gossamer Translucent Voile" data-price="55.00" data-slug="aura-gossamer-translucent-voile">
+            <span class="color-swatch-circle" style="background-color: #F8F9FA; width: 32px; height: 32px;"></span>
+            <div class="text-start">
+              <div class="fw-bold text-dark small">Alabaster Sheer Voile</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Featherlight Sheer • 15% Filter</div>
+            </div>
+            <span class="ms-auto fw-bold text-dark small">₹55</span>
+          </button>
+
+          <button class="spec-selector-btn fabric-selector-btn d-flex align-items-center gap-3" data-color="#C5A880" data-opacity="0.9" data-name="Champagne Gold Heavy Velvet" data-price="155.00" data-slug="champagne-gold-heavy-velvet-drape">
+            <span class="color-swatch-circle" style="background-color: #C5A880; width: 32px; height: 32px;"></span>
+            <div class="text-start">
+              <div class="fw-bold text-dark small">Champagne Gold Velvet</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Silk Velvet • 90% Blackout</div>
+            </div>
+            <span class="ms-auto fw-bold text-dark small">₹155</span>
+          </button>
+        </div>
+
+        <a id="selectedFabricLink" href="/products/heritage-emerald-silk-velvet-drape/" class="btn btn-gold btn-lg w-100">
+          <i class="fas fa-cut me-2"></i> Customize This Curtain
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/visualizer.js' %}"></script>
+{% endblock %}

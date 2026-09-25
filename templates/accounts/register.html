@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}New User Registration | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card-master" style="max-width: 1080px;">
+    <div class="row g-0">
+      
+      <!-- Left Visual Branding Panel -->
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="auth-visual-panel">
+          <div class="auth-visual-bg" style="background-image: url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80');"></div>
+          <div class="auth-visual-overlay"></div>
+          
+          <div class="auth-visual-content">
+            <div>
+              <span class="auth-badge">
+                <i class="fas fa-gem text-warning"></i> New User Privilege
+              </span>
+              <h2 class="display-6 fw-bold font-serif mb-3 text-white">
+                Begin Your Bespoke Interior Journey
+              </h2>
+              <p class="small text-light opacity-75 mb-4">
+                Unlock precision curtain customizers, save window profiles for every room, and access private seasonal releases.
+              </p>
+
+              <!-- Member Exclusive Perks -->
+              <div class="auth-visual-feature">
+                <i class="fas fa-gift"></i>
+                <div class="small">
+                  <strong>Welcome Privilege</strong>
+                  <div class="opacity-75">Use code <strong>LUXE20</strong> for 20% OFF your first custom order</div>
+                </div>
+              </div>
+              <div class="auth-visual-feature">
+                <i class="fas fa-save"></i>
+                <div class="small">
+                  <strong>Room Dimension Vault</strong>
+                  <div class="opacity-75">Save custom heights & pleats for reordering anytime</div>
+                </div>
+              </div>
+              <div class="auth-visual-feature">
+                <i class="fas fa-shipping-fast"></i>
+                <div class="small">
+                  <strong>Tracked Tailoring</strong>
+                  <div class="opacity-75">Live step-by-step updates from the cutting table to your door</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trust Badge Box -->
+            <div class="auth-testimonial-box">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-warning bg-opacity-20 text-warning p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                  <i class="fas fa-certificate fs-5"></i>
+                </div>
+                <div>
+                  <div class="fw-bold small text-white">5-Year Quality Guarantee</div>
+                  <div class="small text-light opacity-75" style="font-size: 0.76rem;">Every hem, pleat, and lining inspected by master weavers.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form Panel -->
+      <div class="col-lg-7">
+        <div class="auth-form-panel">
+          
+          <div class="auth-form-header">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-3 py-1 font-modern fw-bold" style="font-size: 0.72rem;">
+                NEW USER REGISTRATION
+              </span>
+            </div>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">
+              Register as a new user for personalized drapery orders, custom measurements, and private showroom events.
+            </p>
+          </div>
+
+          {% if form.errors %}
+            <div class="alert alert-danger rounded-3 py-2 px-3 small border-0 shadow-sm mb-3">
+              <i class="fas fa-exclamation-circle me-1"></i> Please resolve the highlighted errors below to continue.
+            </div>
+          {% endif %}
+
+          <form method="POST" id="registerForm" novalidate>
+            {% csrf_token %}
+            
+            <div class="row g-3">
+              <!-- First Name -->
+              <div class="col-sm-6">
+                <div class="auth-field-group mb-0">
+                  <label class="auth-field-label">First Name *</label>
+                  <div class="auth-input-wrapper">
+                    <i class="fas fa-user-tag auth-input-icon"></i>
+                    {{ form.first_name }}
+                  </div>
+                  {% if form.first_name.errors %}
+                    <div class="text-danger small mt-1" style="font-size: 0.75rem;">{{ form.first_name.errors.0 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Last Name -->
+              <div class="col-sm-6">
+                <div class="auth-field-group mb-0">
+                  <label class="auth-field-label">Last Name *</label>
+                  <div class="auth-input-wrapper">
+                    <i class="fas fa-user-tag auth-input-icon"></i>
+                    {{ form.last_name }}
+                  </div>
+                  {% if form.last_name.errors %}
+                    <div class="text-danger small mt-1" style="font-size: 0.75rem;">{{ form.last_name.errors.0 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Username -->
+              <div class="col-12">
+                <div class="auth-field-group mb-0">
+                  <label class="auth-field-label">Username *</label>
+                  <div class="auth-input-wrapper">
+                    <i class="fas fa-at auth-input-icon"></i>
+                    {{ form.username }}
+                  </div>
+                  {% if form.username.errors %}
+                    <div class="text-danger small mt-1" style="font-size: 0.75rem;">{{ form.username.errors.0 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Email Address -->
+              <div class="col-12">
+                <div class="auth-field-group mb-0">
+                  <label class="auth-field-label">Email Address *</label>
+                  <div class="auth-input-wrapper">
+                    <i class="fas fa-envelope auth-input-icon"></i>
+                    {{ form.email }}
+                  </div>
+                  {% if form.email.errors %}
+                    <div class="text-danger small mt-1" style="font-size: 0.75rem;">{{ form.email.errors.0 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="col-sm-6">
+                <div class="auth-field-group mb-0">
+                  <label class="auth-field-label">Password *</label>
+                  <div class="auth-input-wrapper">
+                    <i class="fas fa-lock auth-input-icon"></i>
+                    {{ form.password }}
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('id_password', this)" title="Show/Hide">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                  {% if form.password.errors %}
+                    <div class="text-danger small mt-1" style="font-size: 0.75rem;">{{ form.password.errors.0 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="col-sm-6">
+                <div class="auth-field-group mb-0">
+                  <label class="auth-field-label">Confirm Password *</label>
+                  <div class="auth-input-wrapper">
+                    <i class="fas fa-lock-open auth-input-icon"></i>
+                    {{ form.confirm_password }}
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('id_confirm_password', this)" title="Show/Hide">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                  {% if form.confirm_password.errors %}
+                    <div class="text-danger small mt-1" style="font-size: 0.75rem;">{{ form.confirm_password.errors.0 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Terms Checkbox -->
+              <div class="col-12">
+                <div class="form-check mt-1">
+                  <input class="form-check-input" type="checkbox" id="termsCheckbox" checked required>
+                  <label class="form-check-label small text-muted" for="termsCheckbox">
+                    I agree to the <a href="{% url 'core:about' %}" class="text-dark fw-semibold text-decoration-none">Terms of Service</a> and <a href="{% url 'core:about' %}" class="text-dark fw-semibold text-decoration-none">Privacy Policy</a>.
+                  </label>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="col-12 mt-3">
+                <button type="submit" class="auth-submit-btn">
+                  <span>Register as New User</span>
+                  <i class="fas fa-arrow-right small"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Switch to Sign In -->
+          <div class="auth-footer-link">
+            Already have an account? <a href="{% url 'accounts:login' %}">Sign In &rarr;</a>
+          </div>
+
+          <!-- Trust & Encryption Footer -->
+          <div class="text-center mt-3 small text-muted" style="font-size: 0.75rem;">
+            <i class="fas fa-shield-halved text-success me-1"></i> 100% Privacy Protected & Encrypted
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+</script>
+{% endblock %}

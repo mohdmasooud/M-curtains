@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact & Showrooms | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center max-w-700 mx-auto mb-5">
+    <span class="text-uppercase fw-bold small text-warning letter-spacing-1">Get in Touch</span>
+    <h1 class="display-5 fw-bold font-serif mb-3">Speak with a Drapery Consultant</h1>
+    <p class="text-muted">
+      Need advice on measuring awkward windows, motorized track wiring, or custom fabric sampling? Our design team is here to assist.
+    </p>
+  </div>
+
+  <div class="row g-5">
+    <!-- Contact Form -->
+    <div class="col-lg-7">
+      <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+        <h4 class="fw-bold font-serif mb-4">Send Us a Message</h4>
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Your Name *</label>
+              <input type="text" name="name" class="form-control" placeholder="John Doe" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email Address *</label>
+              <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Subject</label>
+              <input type="text" name="subject" class="form-control" placeholder="Custom Sizing / Fabric Swatch Inquiry">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Your Message *</label>
+              <textarea name="message" class="form-control" rows="5" placeholder="Include your window width, ceiling height, or specific curtain styles..." required></textarea>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-gold btn-lg w-100 mt-2">
+                <i class="fas fa-paper-plane me-2"></i> Send Inquiry
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Showrooms & Contact Info -->
+    <div class="col-lg-5">
+      <div class="d-flex flex-column gap-4">
+        
+        <div class="p-4 bg-white rounded-4 border shadow-sm">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="feature-icon-circle mb-0" style="width: 48px; height: 48px; font-size: 1.2rem;">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0">Flagship Showroom</h5>
+              <div class="small text-muted">Beverly Hills Atelier</div>
+            </div>
+          </div>
+          <p class="small text-muted mb-0">
+            450 N Rodeo Drive, Suite 200<br>
+            Beverly Hills, CA 90210<br>
+            Mon – Sat: 10:00 AM – 7:00 PM
+          </p>
+        </div>
+
+        <div class="p-4 bg-white rounded-4 border shadow-sm">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="feature-icon-circle mb-0" style="width: 48px; height: 48px; font-size: 1.2rem;">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0">Direct Concierge</h5>
+              <div class="small text-muted">Toll-Free Helpline</div>
+            </div>
+          </div>
+          <p class="small text-muted mb-0">
+            <strong>Phone:</strong> +1 (800) 589-3727<br>
+            <strong>Email:</strong> concierge@luxedrape.com<br>
+            <strong>Response Time:</strong> Under 2 hours
+          </p>
+        </div>
+
+        <div class="p-4 bg-navy text-white rounded-4 border shadow-sm" style="background: #0f172a;">
+          <h5 class="fw-bold text-white mb-2"><i class="fas fa-ruler-combined text-warning me-2"></i> Free In-Home Virtual Measurement</h5>
+          <p class="small text-light opacity-75 mb-3">
+            Schedule a 20-minute video walkthrough with our senior drapery engineer to verify measurements before fabric cutting.
+          </p>
+          <a href="mailto:concierge@luxedrape.com" class="btn btn-gold btn-sm">Book Video Call</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

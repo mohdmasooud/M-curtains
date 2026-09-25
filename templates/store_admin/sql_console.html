@@ -1,0 +1,141 @@
+{% extends 'admin_base.html' %}
+
+{% block page_title %}Direct SQL Database Console{% endblock %}
+
+{% block admin_content %}
+<div class="row g-4">
+  
+  <!-- SQL Query Editor & Execution Area -->
+  <div class="col-lg-9">
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="fw-bold text-dark font-serif mb-1">
+            <i class="fas fa-terminal text-warning me-2"></i> SQL Query Execution Console
+          </h5>
+          <p class="small text-muted mb-0">Execute standard SQL statements directly on the SQLite database.</p>
+        </div>
+        <span class="badge bg-dark text-warning px-3 py-2 rounded-pill font-monospace" style="font-size: 0.78rem;">
+          SQLite Engine 3.x
+        </span>
+      </div>
+
+      <form method="POST" action="{% url 'store_admin:sql_console' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <textarea name="sql_query" id="sqlQueryInput" rows="5" class="form-control font-monospace p-3 bg-dark text-light border-0 rounded-3 shadow-inner" placeholder="SELECT id, name, base_price, stock_quantity FROM products_product ORDER BY id DESC LIMIT 10;" style="font-size: 0.92rem; line-height: 1.6;" required>{{ sql_query|default:"SELECT id, name, base_price, stock_quantity, blackout_percentage FROM products_product ORDER BY id ASC LIMIT 10;" }}</textarea>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <!-- Quick Query Buttons -->
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="setQuery('SELECT id, name, base_price, stock_quantity FROM products_product LIMIT 10;')">
+              Products
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="setQuery('SELECT order_number, full_name, status, total_amount, created_at FROM orders_order ORDER BY created_at DESC LIMIT 10;')">
+              Recent Orders
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="setQuery('SELECT status, COUNT(*) as count, SUM(total_amount) as total_inr FROM orders_order GROUP BY status;')">
+              Sales by Status
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="setQuery('SELECT code, discount_percentage, min_purchase_amount, is_active FROM cart_coupon;')">
+              Coupons
+            </button>
+          </div>
+
+          <button type="submit" class="btn btn-warning text-dark fw-bold px-4 rounded-pill shadow-sm">
+            <i class="fas fa-play me-1"></i> Run SQL Query
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Error Alert if query fails -->
+    {% if error_message %}
+      <div class="alert alert-danger rounded-4 p-4 shadow-sm mb-4 border-0">
+        <h6 class="fw-bold mb-1"><i class="fas fa-exclamation-triangle me-2"></i> SQL Execution Error</h6>
+        <div class="font-monospace small bg-white bg-opacity-75 p-3 rounded-3 mt-2 text-danger">
+          {{ error_message }}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Query Results Table -->
+    {% if columns %}
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+        <div class="card-header bg-light py-3 px-4 d-flex justify-content-between align-items-center">
+          <span class="fw-bold text-dark font-serif">
+            <i class="fas fa-table me-2 text-primary"></i> Query Results ({{ rows_affected }} row{{ rows_affected|pluralize }})
+          </span>
+          <span class="badge bg-success bg-opacity-10 text-success fw-semibold">
+            Execution Time: {{ exec_time_ms }} ms
+          </span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 font-monospace small">
+            <thead class="table-dark">
+              <tr>
+                {% for col in columns %}
+                  <th class="py-3 px-3">{{ col }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in rows %}
+                <tr>
+                  {% for val in row %}
+                    <td class="py-3 px-3">{{ val|default:"NULL" }}</td>
+                  {% endfor %}
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="{{ columns|length }}" class="text-center py-4 text-muted">Query executed successfully. 0 rows returned.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% elif request.method == 'POST' and not error_message %}
+      <div class="alert alert-success rounded-4 p-4 shadow-sm mb-4 border-0">
+        <i class="fas fa-check-circle me-2"></i> Query executed successfully. Rows affected: <strong>{{ rows_affected }}</strong> ({{ exec_time_ms }} ms).
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar: Database Tables Directory -->
+  <div class="col-lg-3">
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 100px;">
+      <h6 class="fw-bold text-dark font-serif mb-3">
+        <i class="fas fa-database text-warning me-2"></i> App SQL Tables
+      </h6>
+      <div class="list-group list-group-flush small">
+        {% for table in tables %}
+          <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 d-flex justify-content-between align-items-center" onclick="event.preventDefault(); setQuery('SELECT * FROM {{ table }} LIMIT 20;');">
+            <span class="font-monospace text-dark">{{ table }}</span>
+            <i class="fas fa-arrow-right text-muted small opacity-50"></i>
+          </a>
+        {% empty %}
+          <div class="text-muted small">No tables found.</div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-4 pt-3 border-top">
+        <div class="small text-muted mb-2 fw-semibold">Quick SQL Tips:</div>
+        <ul class="small text-muted ps-3 mb-0" style="font-size: 0.78rem;">
+          <li><code>SELECT * FROM table;</code></li>
+          <li><code>UPDATE table SET col=val WHERE id=1;</code></li>
+          <li><code>DELETE FROM table WHERE id=99;</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function setQuery(sql) {
+    document.getElementById('sqlQueryInput').value = sql;
+  }
+</script>
+{% endblock %}

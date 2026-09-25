@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Track Your Drapery Order | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="max-w-700 mx-auto text-center mb-5">
+    <span class="text-uppercase fw-bold small text-warning letter-spacing-1">Live Tracking</span>
+    <h1 class="display-6 fw-bold font-serif mb-2">Track Your Curtain Order</h1>
+    <p class="text-muted">Enter your order number to look up live status, tailoring progress, and tracking code.</p>
+  </div>
+
+  <!-- Search Card -->
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-5">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Order Number *</label>
+            <input type="text" name="order_number" class="form-control form-control-lg text-uppercase" placeholder="e.g. LX-DEMO-1001" required value="{{ request.POST.order_number }}">
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-bold">Billing / Recipient Email (Optional)</label>
+            <input type="email" name="email" class="form-control" placeholder="john@example.com" value="{{ request.POST.email }}">
+          </div>
+          <button type="submit" class="btn btn-gold btn-lg w-100 rounded-pill">
+            <i class="fas fa-search me-2"></i> Track Order
+          </button>
+        </form>
+      </div>
+
+      <!-- Search Results -->
+      {% if order %}
+        <div class="bg-white p-4 rounded-4 border shadow-sm text-center">
+          <span class="badge bg-warning text-dark mb-2">Found Order #{{ order.order_number }}</span>
+          <h4 class="fw-bold font-serif mb-1">Status: {{ order.get_status_display }}</h4>
+          <p class="small text-muted mb-3">Recipient: {{ order.full_name }} • Placed on {{ order.created_at|date:"M d, Y" }}</p>
+          
+          <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-navy rounded-pill px-4">
+            View Live Timeline & Tracking Details
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

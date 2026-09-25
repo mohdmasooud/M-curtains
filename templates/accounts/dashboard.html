@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Account Dashboard | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Welcome Banner -->
+  <div class="bg-white p-4 rounded-4 border shadow-sm mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+      <span class="badge bg-warning text-dark mb-2">Member Atelier</span>
+      <h2 class="fw-bold font-serif mb-1">Hello, {{ user.get_full_name|default:user.first_name|default:user.username }}!</h2>
+      <p class="small text-muted mb-0">Manage your bespoke drapery orders, track tailoring progress, and manage addresses.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'accounts:profile' %}" class="btn btn-outline-dark rounded-pill btn-sm px-3">
+        <i class="fas fa-user-edit me-1"></i> Edit Profile
+      </a>
+      <a href="{% url 'orders:order_history' %}" class="btn btn-gold rounded-pill btn-sm px-3">
+        <i class="fas fa-boxes me-1"></i> All Orders
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: Recent Orders -->
+    <div class="col-lg-8">
+      <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold font-serif mb-0"><i class="fas fa-box-open text-warning me-2"></i> Recent Drapery Orders</h5>
+          <a href="{% url 'orders:order_history' %}" class="small text-dark fw-bold">View All ({{ total_orders }})</a>
+        </div>
+
+        {% if recent_orders %}
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead class="table-light small">
+                <tr>
+                  <th>Order #</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in recent_orders %}
+                  <tr>
+                    <td>
+                      <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="fw-bold text-dark text-decoration-none">
+                        #{{ order.order_number }}
+                      </a>
+                    </td>
+                    <td class="small text-muted">{{ order.created_at|date:"M d, Y" }}</td>
+                    <td class="fw-bold text-dark">₹{{ order.total_amount }}</td>
+                    <td>
+                      {% if order.status == 'Delivered' %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Delivered</span>
+                      {% elif order.status == 'Shipped' %}
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">Shipped</span>
+                      {% elif order.status == 'Tailoring' %}
+                        <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">In Tailoring</span>
+                      {% else %}
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">{{ order.status }}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                        Track & Details
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="text-center py-4 text-muted">
+            <i class="fas fa-shopping-bag fs-1 text-secondary opacity-50 mb-3 d-block"></i>
+            <p>You haven't placed any custom curtain orders yet.</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-gold btn-sm">Explore Curtain Collections</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right Column: Profile & Addresses -->
+    <div class="col-lg-4">
+      <!-- Quick Account Summary -->
+      <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+        <h5 class="fw-bold font-serif mb-3"><i class="fas fa-user-circle text-warning me-2"></i> Client Details</h5>
+        <div class="small mb-2"><strong>Email:</strong> {{ user.email }}</div>
+        <div class="small mb-2"><strong>Phone:</strong> {{ user.profile.phone_number|default:"Not specified" }}</div>
+        <div class="small mb-3"><strong>Member Since:</strong> {{ user.date_joined|date:"M Y" }}</div>
+        <a href="{% url 'accounts:profile' %}" class="btn btn-sm btn-outline-gold w-100 rounded-pill">Update Profile</a>
+      </div>
+
+      <!-- Saved Addresses Box -->
+      <div class="bg-white p-4 rounded-4 border shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold font-serif mb-0"><i class="fas fa-map-marker-alt text-warning me-2"></i> Saved Addresses</h5>
+          <a href="{% url 'accounts:address_add' %}" class="btn btn-sm btn-outline-dark rounded-pill py-0 px-2">+ Add</a>
+        </div>
+
+        {% if addresses %}
+          {% for addr in addresses|slice:":2" %}
+            <div class="p-3 mb-2 rounded-3 bg-light border position-relative">
+              {% if addr.is_default %}
+                <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2" style="font-size: 0.65rem;">Default</span>
+              {% endif %}
+              <div class="fw-bold small text-dark">{{ addr.recipient_name }}</div>
+              <div class="small text-muted">{{ addr.street_address }}{% if addr.apartment_suite %}, {{ addr.apartment_suite }}{% endif %}</div>
+              <div class="small text-muted">{{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}</div>
+            </div>
+          {% endfor %}
+          <a href="{% url 'accounts:address_list' %}" class="small text-dark fw-bold d-block mt-2">Manage All Addresses</a>
+        {% else %}
+          <p class="small text-muted mb-0">No shipping addresses saved yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

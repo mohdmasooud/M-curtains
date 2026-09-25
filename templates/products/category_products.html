@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} | LuxeDrape Curtains{% endblock %}
+
+{% block content %}
+<!-- Category Banner -->
+<div class="position-relative py-5 text-white" style="background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.7) 100%), url('{{ category.display_image }}') center/cover no-repeat;">
+  <div class="container py-4">
+    <div class="max-w-700">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-warning text-decoration-none">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}" class="text-warning text-decoration-none">Collections</a></li>
+          <li class="breadcrumb-item active text-light" aria-current="page">{{ category.name }}</li>
+        </ol>
+      </nav>
+      <h1 class="display-5 fw-bold font-serif mb-2 text-white">{{ category.name }}</h1>
+      <p class="lead text-light opacity-75 mb-0">{{ category.description }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <div class="small text-muted">{{ total_count }} products in this collection</div>
+    <div>
+      <a href="{% url 'products:product_list' %}" class="btn btn-sm btn-outline-dark rounded-pill">
+        <i class="fas fa-th-large me-1"></i> View All Drapes
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    {% for product in products %}
+      <div class="col-md-6 col-lg-4">
+        <div class="product-card">
+          <div class="product-image-wrapper">
+            {% if product.is_bestseller %}
+              <span class="badge-tag badge-bestseller">Bestseller</span>
+            {% elif product.is_new_arrival %}
+              <span class="badge-tag badge-new">New Arrival</span>
+            {% endif %}
+
+            {% if product.discount_percent > 0 %}
+              <span class="badge-tag badge-sale" style="top: {% if product.is_bestseller or product.is_new_arrival %}40px{% else %}14px{% endif %};">-{{ product.discount_percent }}% OFF</span>
+            {% endif %}
+
+            <img src="{{ product.display_image }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/product-placeholder.jpg' %}';">
+            
+            <div class="product-blackout-pill">
+              <i class="fas fa-adjust me-1"></i> {{ product.blackout_percentage }}% Blackout
+            </div>
+          </div>
+
+          <div class="product-body">
+            <div class="product-category-link">{{ product.fabric.name|default:category.name }}</div>
+            <a href="{% url 'products:product_detail' slug=product.slug %}" class="product-title">
+              {{ product.name }}
+            </a>
+
+            <div class="product-rating">
+              {% for i in "12345" %}
+                <i class="fas fa-star"></i>
+              {% endfor %}
+              <span class="rating-count ms-1">({{ product.review_count|default:"6" }})</span>
+            </div>
+
+            <div class="product-price-wrapper">
+              <div>
+                <span class="price-current">₹{{ product.current_price }}</span>
+                {% if product.discount_price and product.discount_price < product.base_price %}
+                  <span class="price-original">₹{{ product.base_price }}</span>
+                {% endif %}
+              </div>
+              <a href="{% url 'products:product_detail' slug=product.slug %}" class="btn btn-sm btn-outline-gold ms-auto rounded-pill px-3">
+                Customize
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5">
+        <p class="text-muted">No curtains currently available in this category.</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-gold btn-sm">Browse All Curtains</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

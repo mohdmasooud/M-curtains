@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+          <div>
+            <h3 class="fw-bold font-serif mb-1">Account & Profile Settings</h3>
+            <p class="small text-muted mb-0">Update your contact information and primary home address.</p>
+          </div>
+          <a href="{% url 'accounts:dashboard' %}" class="btn btn-sm btn-outline-dark rounded-pill">
+            <i class="fas fa-arrow-left me-1"></i> Dashboard
+          </a>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h5 class="fw-bold font-serif mb-3 text-warning"><i class="fas fa-id-card me-2"></i> Personal Details</h5>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">First Name</label>
+              {{ form.first_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Last Name</label>
+              {{ form.last_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Email Address</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Phone Number</label>
+              {{ form.phone_number }}
+            </div>
+          </div>
+
+          <h5 class="fw-bold font-serif mb-3 text-warning"><i class="fas fa-home me-2"></i> Primary Residential Address</h5>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label small fw-bold">Street Address</label>
+              {{ form.address_line1 }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Apartment, Suite, Unit</label>
+              {{ form.address_line2 }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">City</label>
+              {{ form.city }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">State / Province</label>
+              {{ form.state }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Postal Code</label>
+              {{ form.postal_code }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold">Country</label>
+              {{ form.country }}
+            </div>
+            <div class="col-12 mt-4">
+              <button type="submit" class="btn btn-gold btn-lg w-100">
+                <i class="fas fa-save me-2"></i> Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

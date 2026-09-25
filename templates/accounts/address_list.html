@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saved Addresses | LuxeDrape{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <div>
+      <h2 class="fw-bold font-serif mb-1">Saved Shipping Addresses</h2>
+      <p class="small text-muted mb-0">Manage addresses for fast one-click checkout.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'accounts:address_add' %}" class="btn btn-gold rounded-pill btn-sm px-3">
+        <i class="fas fa-plus me-1"></i> Add New Address
+      </a>
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-dark rounded-pill btn-sm px-3">
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    {% for address in addresses %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-4 border rounded-4 shadow-sm position-relative {% if address.is_default %}border-warning bg-light{% endif %}">
+          {% if address.is_default %}
+            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3">Default Address</span>
+          {% endif %}
+          
+          <h5 class="fw-bold font-serif mb-2">{{ address.recipient_name }}</h5>
+          <p class="small text-muted mb-1"><i class="fas fa-phone me-1"></i> {{ address.phone_number }}</p>
+          <p class="small text-muted mb-4">
+            {{ address.street_address }}{% if address.apartment_suite %}, {{ address.apartment_suite }}{% endif %}<br>
+            {{ address.city }}, {{ address.state }} {{ address.postal_code }}<br>
+            {{ address.country }}
+          </p>
+
+          <div class="mt-auto pt-3 border-top d-flex gap-2 align-items-center">
+            <a href="{% url 'accounts:address_edit' address_id=address.id %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+              <i class="fas fa-edit me-1"></i> Edit
+            </a>
+            <a href="{% url 'accounts:address_delete' address_id=address.id %}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+              <i class="fas fa-trash-alt me-1"></i> Delete
+            </a>
+            {% if not address.is_default %}
+              <a href="{% url 'accounts:address_set_default' address_id=address.id %}" class="btn btn-sm btn-link text-warning text-decoration-none ms-auto small">
+                Make Default
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5">
+        <i class="fas fa-map-marked-alt fs-1 text-muted mb-3 d-block"></i>
+        <h5>No saved addresses yet</h5>
+        <p class="text-muted small">Add your shipping destination for seamless custom drape deliveries.</p>
+        <a href="{% url 'accounts:address_add' %}" class="btn btn-gold btn-sm">Add New Address</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,356 @@
+/* ==========================================================================
+   LuxeDrape - High-Performance 3D Modern Scroll & Smooth Visual Effects
+   ========================================================================== */
+
+/* Top Scroll Progress Indicator (Hardware Accelerated) */
+#scrollProgressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #c5a880 0%, #dfba43 50%, #fff2d6 80%, #c5a880 100%);
+  z-index: 9999;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+  pointer-events: none;
+  transform: translateZ(0);
+  will-change: width;
+}
+
+/* 3D Perspective Containers */
+.perspective-container {
+  perspective: 1000px;
+}
+
+/* 3D Tilt Card Base (Optimized with will-change and transform3d) */
+.tilt-card-3d {
+  position: relative;
+  will-change: transform;
+  transform: translateZ(0);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.tilt-card-3d .tilt-depth-layer {
+  transform: translateZ(20px);
+  transition: transform 0.25s ease-out;
+}
+
+.tilt-card-3d .tilt-depth-layer-high {
+  transform: translateZ(35px);
+  transition: transform 0.25s ease-out;
+}
+
+/* Dynamic Glare Reflection Layer */
+.tilt-glare-effect {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 5;
+  mix-blend-mode: overlay;
+}
+
+/* Hero Stardust Canvas (Lightweight & Smooth) */
+#hero3DCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-editorial-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Hero Floating 3D Depth Elements */
+.hero-3d-floating-badge {
+  position: absolute;
+  animation: float3D 5s ease-in-out infinite alternate;
+  z-index: 10;
+  will-change: transform;
+}
+
+@keyframes float3D {
+  0% {
+    transform: translateY(0px) translateZ(20px);
+  }
+  100% {
+    transform: translateY(-8px) translateZ(30px);
+  }
+}
+
+/* 3D Interactive Curtain Atelier Simulator */
+.atelier-3d-studio-box {
+  background: radial-gradient(circle at 20% 20%, rgba(30, 41, 59, 0.7) 0%, rgba(11, 19, 41, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  position: relative;
+}
+
+.atelier-window-frame {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+  transition: filter 0.4s ease;
+  will-change: filter;
+}
+
+/* Ambient Lighting Filters */
+.ambient-day {
+  filter: brightness(1.04) contrast(1.02);
+}
+
+.ambient-sunset {
+  filter: sepia(0.25) saturate(1.3) brightness(0.95);
+}
+
+.ambient-night {
+  filter: brightness(0.48) contrast(1.25) saturate(0.85);
+}
+
+.ambient-night .window-moon-glow {
+  opacity: 1;
+}
+
+.window-moon-glow {
+  position: absolute;
+  top: 15%;
+  right: 25%;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.2) 60%, transparent 100%);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* 3D Realistic Fabric Wave Simulation Panels */
+.curtain-curtain-pair {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.curtain-panel-3d {
+  height: 100%;
+  width: 48%;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  position: relative;
+  transition: width 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: width;
+}
+
+.curtain-panel-left {
+  border-radius: 0 0 10px 0;
+}
+
+.curtain-panel-right {
+  border-radius: 0 0 0 10px;
+}
+
+.curtain-pleat-shadows {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.3) 0px,
+    rgba(255, 255, 255, 0.12) 15px,
+    rgba(0, 0, 0, 0.35) 30px,
+    rgba(0, 0, 0, 0.08) 45px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+
+.curtain-rod-brass {
+  position: absolute;
+  top: 14px;
+  left: 10px;
+  right: 10px;
+  height: 7px;
+  background: linear-gradient(180deg, #ffe599 0%, #c5a880 50%, #8c6d37 100%);
+  border-radius: 4px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  z-index: 10;
+}
+
+.curtain-rod-finial-left,
+.curtain-rod-finial-right {
+  position: absolute;
+  top: -3.5px;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, #ffe599 0%, #c5a880 70%, #6b4e1b 100%);
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.curtain-rod-finial-left { left: -8px; }
+.curtain-rod-finial-right { right: -8px; }
+
+/* Interactive Studio Controls */
+.studio-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-family: var(--font-modern);
+  font-size: 0.80rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.studio-pill-btn:hover,
+.studio-pill-btn.active {
+  background: var(--gold-gradient);
+  color: #080d1a;
+  border-color: var(--gold-metallic);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+}
+
+.fabric-swatch-chip {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+.fabric-swatch-chip:hover {
+  transform: scale(1.12);
+}
+
+.fabric-swatch-chip.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2.5px var(--gold-metallic), 0 3px 10px rgba(0, 0, 0, 0.3);
+  transform: scale(1.08);
+}
+
+/* High-Performance Smooth Scroll Reveals */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-3d-left {
+  opacity: 0;
+  transform: translate3d(-25px, 0, 0);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-3d-right {
+  opacity: 0;
+  transform: translate3d(25px, 0, 0);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.96) translate3d(0, 0, 0);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-active {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) scale(1) !important;
+}
+
+/* Stagger Delays */
+.stagger-1 { transition-delay: 0.05s; }
+.stagger-2 { transition-delay: 0.10s; }
+.stagger-3 { transition-delay: 0.15s; }
+.stagger-4 { transition-delay: 0.20s; }
+
+/* 3D Stepper Card */
+.stepper-card-3d {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  padding: 30px 22px;
+  height: 100%;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 16px rgba(11, 19, 41, 0.04);
+}
+
+.stepper-card-3d:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-gold);
+}
+
+/* 3D Testimonial Card */
+.testimonial-card-3d {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 30px 26px;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-card-3d:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-gold);
+}
+
+/* VIP Card (Optimized without infinite full-viewport conic rotation) */
+.vip-card-3d {
+  background: linear-gradient(135deg, #0b1329 0%, #080d1a 60%, #162038 100%);
+  border-radius: 24px;
+  padding: 44px 36px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+}
+
+.vip-card-3d-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .atelier-window-frame {
+    height: 280px;
+  }
+  .tilt-card-3d {
+    transform: none !important;
+  }
+}

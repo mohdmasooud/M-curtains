@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | LuxeDrape Bespoke Drapery{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-warning text-decoration-none">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}" class="text-warning text-decoration-none">Collections</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'products:category_detail' slug=product.category.slug %}" class="text-warning text-decoration-none">{{ product.category.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-5">
+    <!-- Left Column: Product Gallery -->
+    <div class="col-lg-6">
+      <div class="position-sticky" style="top: 100px;">
+        <!-- Main Large Image -->
+        <div class="rounded-4 overflow-hidden shadow-sm border bg-light mb-3 position-relative" style="height: 520px;">
+          <img id="mainProductImage" src="{{ product.display_image }}" alt="{{ product.name }}" class="w-100 h-100" style="object-fit: cover;">
+          <div class="product-blackout-pill position-absolute bottom-0 start-0 m-3 fs-6">
+            <i class="fas fa-adjust me-1 text-warning"></i> {{ product.blackout_percentage }}% Blackout Rating
+          </div>
+        </div>
+
+        <!-- Gallery Thumbnails -->
+        <div class="d-flex gap-2 overflow-x-auto pb-2">
+          <button type="button" class="btn p-0 border rounded-3 overflow-hidden gallery-thumb-btn active border-warning" data-full-img="{{ product.display_image }}" style="width: 80px; height: 80px; flex-shrink: 0;">
+            <img src="{{ product.display_image }}" alt="{{ product.name }}" class="w-100 h-100" style="object-fit: cover;">
+          </button>
+          {% for img in gallery_images %}
+            <button type="button" class="btn p-0 border rounded-3 overflow-hidden gallery-thumb-btn" data-full-img="{{ img.display_image }}" style="width: 80px; height: 80px; flex-shrink: 0;">
+              <img src="{{ img.display_image }}" alt="{{ img.alt_text }}" class="w-100 h-100" style="object-fit: cover;">
+            </button>
+          {% endfor %}
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="row g-2 mt-4 pt-3 border-top text-center small text-muted">
+          <div class="col-4">
+            <i class="fas fa-shield-alt text-warning fs-5 d-block mb-1"></i>
+            5-Year Fabric Guarantee
+          </div>
+          <div class="col-4">
+            <i class="fas fa-ruler-combined text-warning fs-5 d-block mb-1"></i>
+            Laser-Cut Sizing
+          </div>
+          <div class="col-4">
+            <i class="fas fa-truck text-warning fs-5 d-block mb-1"></i>
+            Free Express Delivery
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Product Info & Customizer Form -->
+    <div class="col-lg-6">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-warning text-dark font-display small">{{ product.category.name }}</span>
+          {% if product.fabric %}
+            <span class="badge bg-secondary-subtle text-dark border">{{ product.fabric.name }}</span>
+          {% endif %}
+          <span class="badge {% if product.stock_quantity > 10 %}bg-success-subtle text-success border border-success-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} ms-auto">
+            {% if product.stock_quantity > 0 %}In Stock ({{ product.stock_quantity }} panels available){% else %}Out of Stock{% endif %}
+          </span>
+        </div>
+
+        <h1 class="display-6 fw-bold font-serif mb-2 text-dark">{{ product.name }}</h1>
+
+        <!-- Rating Summary -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div class="product-rating mb-0">
+            {% for i in "12345" %}
+              <i class="fas fa-star"></i>
+            {% endfor %}
+          </div>
+          <span class="fw-bold small">{{ product.average_rating }}</span>
+          <span class="text-muted small">({{ product.review_count }} verified client reviews)</span>
+        </div>
+
+        <p class="text-muted mb-4">{{ product.short_description }}</p>
+
+        <!-- Dynamic Customizer Form -->
+        <form id="curtainCustomizerForm" method="POST" action="{% url 'cart:cart_add' product_id=product.id %}" class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-4">
+          {% csrf_token %}
+          <input type="hidden" id="customizerProductId" value="{{ product.id }}">
+
+          <h5 class="fw-bold font-serif mb-4 text-dark"><i class="fas fa-sliders-h text-warning me-2"></i> Bespoke Tailoring Options</h5>
+
+          <!-- 1. Custom Dimensions -->
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase text-muted font-display">1. Panel Dimensions (cm)</label>
+            <div class="row g-2">
+              <div class="col-6">
+                <div class="input-group">
+                  <span class="input-group-text small bg-light">Width</span>
+                  <input type="number" name="width_cm" id="customWidthInput" class="form-control" value="{{ product.default_width_cm }}" min="50" max="600" required>
+                  <span class="input-group-text small">cm</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="input-group">
+                  <span class="input-group-text small bg-light">Drop</span>
+                  <input type="number" name="drop_cm" id="customDropInput" class="form-control" value="{{ product.default_drop_cm }}" min="50" max="600" required>
+                  <span class="input-group-text small">cm</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-text small">Standard panel is {{ product.default_width_cm }}cm width × {{ product.default_drop_cm }}cm drop. Pricing adjusts live.</div>
+          </div>
+
+          <!-- 2. Pleat Style -->
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase text-muted font-display">2. Heading & Pleat Style</label>
+            <div class="d-flex flex-column gap-2">
+              {% for pleat in pleat_types %}
+                <label class="spec-selector-btn d-flex align-items-center justify-content-between p-2 rounded-3 border cursor-pointer">
+                  <div class="d-flex align-items-center gap-2">
+                    <input type="radio" name="pleat_id" value="{{ pleat.id }}" class="form-check-input" {% if forloop.first %}checked{% endif %}>
+                    <div>
+                      <div class="fw-bold small text-dark">{{ pleat.name }}</div>
+                      <div class="small text-muted" style="font-size: 0.75rem;">{{ pleat.description }}</div>
+                    </div>
+                  </div>
+                  <span class="small fw-semibold text-muted">{% if pleat.extra_cost > 0 %}+₹{{ pleat.extra_cost }}{% else %}Included{% endif %}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- 3. Lining Option -->
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase text-muted font-display">3. Lining Type</label>
+            <div class="d-flex flex-column gap-2">
+              {% for lining in lining_types %}
+                <label class="spec-selector-btn d-flex align-items-center justify-content-between p-2 rounded-3 border cursor-pointer">
+                  <div class="d-flex align-items-center gap-2">
+                    <input type="radio" name="lining_id" value="{{ lining.id }}" class="form-check-input" {% if forloop.first %}checked{% endif %}>
+                    <div>
+                      <div class="fw-bold small text-dark">{{ lining.name }}</div>
+                      <div class="small text-muted" style="font-size: 0.75rem;">{{ lining.description }}</div>
+                    </div>
+                  </div>
+                  <span class="small fw-semibold text-muted">{% if lining.extra_cost > 0 %}+₹{{ lining.extra_cost }}{% else %}Included{% endif %}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Quantity & Live Price Summary -->
+          <div class="p-3 bg-light rounded-4 border mb-4 d-flex justify-content-between align-items-center">
+            <div>
+              <div class="small text-muted fw-semibold">Estimated Custom Price:</div>
+              <div class="fs-3 fw-bold text-dark price-modern" id="liveCalculatedPrice">
+                ₹{{ product.current_price }}
+              </div>
+            </div>
+            <div style="width: 110px;">
+              <label class="form-label small fw-bold mb-1">Panels (Qty):</label>
+              <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="form-control text-center fw-bold">
+            </div>
+          </div>
+
+          <!-- Add to Cart CTA -->
+          <button type="submit" class="btn btn-luxe-gold btn-lg w-100 py-3 shadow">
+            <i class="fas fa-shopping-bag me-2"></i> Add Custom Curtains to Bag
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Specifications & Description Tabs -->
+  <div class="mt-5 pt-4">
+    <ul class="nav nav-pills mb-4 border-bottom pb-3" id="pills-tab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active rounded-pill px-4 fw-bold" id="tab-desc-btn" data-bs-toggle="pill" data-bs-target="#tab-desc" type="button">Atelier Specifications</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill px-4 fw-bold" id="tab-reviews-btn" data-bs-toggle="pill" data-bs-target="#tab-reviews" type="button">Client Reviews ({{ product.review_count }})</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+      <!-- Details Tab -->
+      <div class="tab-pane fade show active bg-white p-4 p-md-5 rounded-4 border shadow-sm" id="tab-desc">
+        <h4 class="fw-bold font-serif mb-3 text-dark">Artisan Weave & Tailoring Details</h4>
+        <p class="text-muted leading-relaxed mb-4">{{ product.description }}</p>
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h6 class="fw-bold text-dark mb-2"><i class="fas fa-scroll text-warning me-2"></i> Fabric Composition</h6>
+            <p class="small text-muted">{{ product.fabric.composition|default:"100% Master Weave Textile" }}</p>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold text-dark mb-2"><i class="fas fa-soap text-warning me-2"></i> Care Instructions</h6>
+            <p class="small text-muted">{{ product.fabric.care_instructions|default:"Dry clean recommended. Gentle steam iron on reverse side." }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews Tab -->
+      <div class="tab-pane fade bg-white p-4 p-md-5 rounded-4 border shadow-sm" id="tab-reviews">
+        <div class="row g-5">
+          <!-- Reviews List -->
+          <div class="col-lg-7">
+            <h4 class="fw-bold font-serif mb-4 text-dark">Client Impressions</h4>
+            {% for review in reviews %}
+              <div class="p-3 mb-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="fw-bold text-dark">{{ review.user.first_name|default:review.user.username }}</div>
+                  <div class="product-rating mb-0">
+                    {% for i in "12345" %}
+                      <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted opacity-25{% endif %}"></i>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% if review.title %}
+                  <h6 class="fw-bold mb-1">{{ review.title }}</h6>
+                {% endif %}
+                <p class="text-muted small mb-1">{{ review.comment }}</p>
+                <div class="text-muted" style="font-size: 0.72rem;">{{ review.created_at|date:"F d, Y" }}</div>
+              </div>
+            {% empty %}
+              <p class="text-muted">No reviews yet. Be the first to share your experience!</p>
+            {% endfor %}
+          </div>
+
+          <!-- Review Form -->
+          <div class="col-lg-5">
+            <div class="p-4 bg-light rounded-4 border">
+              <h5 class="fw-bold font-serif mb-3 text-dark">Write a Review</h5>
+              {% if user.is_authenticated %}
+                <form method="POST" action="{% url 'products:submit_review' slug=product.slug %}">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Star Rating</label>
+                    {{ review_form.rating }}
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Review Title</label>
+                    {{ review_form.title }}
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Comments</label>
+                    {{ review_form.comment }}
+                  </div>
+                  <button type="submit" class="btn btn-luxe-gold btn-sm w-100">Submit Review</button>
+                </form>
+              {% else %}
+                <p class="small text-muted mb-3">Please sign in to your client account to leave a verified review.</p>
+                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-luxe-dark btn-sm w-100">Sign In to Review</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Curtains -->
+  {% if related_products %}
+    <div class="mt-5 pt-4">
+      <h3 class="fw-bold font-serif mb-4 text-dark">Complete the Interior Look</h3>
+      <div class="row g-4">
+        {% for rel in related_products %}
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-image-wrapper">
+                <img src="{{ rel.display_image }}" alt="{{ rel.name }}">
+              </div>
+              <div class="product-body">
+                <a href="{% url 'products:product_detail' slug=rel.slug %}" class="product-title small fw-bold">
+                  {{ rel.name }}
+                </a>
+                <div class="product-price-wrapper mt-auto pt-2">
+                  <span class="price-current">₹{{ rel.current_price }}</span>
+                  <a href="{% url 'products:product_detail' slug=rel.slug %}" class="btn btn-sm btn-luxe-outline-gold py-1 px-2" style="font-size: 0.75rem;">
+                    View
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/calculator.js' %}"></script>
+{% endblock %}
