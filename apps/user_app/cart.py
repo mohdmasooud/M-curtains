@@ -1,8 +1,8 @@
 from decimal import Decimal
 from .models import Product, Coupon, PleatType, LiningType
 
-CART_SESSION_ID = 'luxedrape_cart'
-COUPON_SESSION_ID = 'luxedrape_coupon_id'
+CART_SESSION_ID = 'mcurtains_cart'
+COUPON_SESSION_ID = 'mcurtains_coupon_id'
 
 class Cart:
     def __init__(self, request):

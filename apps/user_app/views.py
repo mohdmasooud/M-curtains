@@ -71,7 +71,7 @@ def about_view(request):
 
 def contact_view(request):
     if request.method == 'POST':
-        messages.success(request, "Thank you for contacting LuxeDrape Artisans. Our design concierge will contact you within 24 hours.")
+        messages.success(request, "Thank you for contacting M Curtains Artisans. Our design concierge will contact you within 24 hours.")
         return redirect('user_app:contact')
     return render(request, 'core/contact.html')
 
@@ -90,7 +90,7 @@ def register_view(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            messages.success(request, f"Welcome to LuxeDrape Atelier, {user.first_name or user.username}! Your account has been created.")
+            messages.success(request, f"Welcome to M Curtains Atelier, {user.first_name or user.username}! Your account has been created.")
             login(request, user)
             return redirect('user_app:dashboard')
         else:

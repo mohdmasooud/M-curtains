@@ -1,4 +1,4 @@
-# LuxeDrape - Haute Couture & Bespoke Luxury Drapery Atelier
+# M Curtains - Haute Couture & Bespoke Luxury Drapery Atelier
 
 A full-stack luxury **Curtain E-Commerce & Atelier Management Platform** built with **Python, Django, SQL (SQLite ORM), Bootstrap 5.3, Vanilla CSS, and Hardware-Accelerated 3D JavaScript**.
 

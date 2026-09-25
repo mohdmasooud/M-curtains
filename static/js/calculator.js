@@ -1,5 +1,5 @@
 /**
- * LuxeDrape Measurement & Custom Pricing Calculator
+ * M Curtains Measurement & Custom Pricing Calculator
  */
 
 document.addEventListener('DOMContentLoaded', () => {

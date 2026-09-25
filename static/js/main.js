@@ -1,5 +1,5 @@
 /**
- * LuxeDrape Core Frontend JavaScript
+ * M Curtains Core Frontend JavaScript
  */
 
 document.addEventListener('DOMContentLoaded', () => {

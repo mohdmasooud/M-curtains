@@ -1,5 +1,5 @@
 /**
- * LuxeDrape - Ultra-Fast & Smooth 3D Interactive Engine (60fps Optimized)
+ * M Curtains - Ultra-Fast & Smooth 3D Interactive Engine (60fps Optimized)
  */
 
 document.addEventListener('DOMContentLoaded', () => {

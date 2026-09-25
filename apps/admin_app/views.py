@@ -25,7 +25,7 @@ def admin_login_view(request):
             user = form.get_user()
             if user.is_staff or user.is_superuser:
                 login(request, user)
-                messages.success(request, f"Welcome back to LuxeDrape Atelier Management, {user.first_name or user.username}!")
+                messages.success(request, f"Welcome back to M Curtains Atelier Management, {user.first_name or user.username}!")
                 next_url = request.GET.get('next') or request.POST.get('next') or 'store_admin:dashboard'
                 return redirect(next_url)
             else:

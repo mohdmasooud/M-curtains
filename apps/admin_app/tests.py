@@ -11,7 +11,7 @@ class AdminAppTests(TestCase):
         # Staff Admin User
         self.admin_user = User.objects.create_user(
             username='adminuser',
-            email='admin@luxedrape.com',
+            email='admin@mcurtains.com',
             password='AdminPassword2026!',
             is_staff=True,
             is_superuser=True

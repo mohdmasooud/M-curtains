@@ -1,5 +1,5 @@
 /**
- * LuxeDrape Interactive Room Drapery Visualizer
+ * M Curtains Interactive Room Drapery Visualizer
  */
 
 document.addEventListener('DOMContentLoaded', () => {

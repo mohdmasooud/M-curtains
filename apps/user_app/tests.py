@@ -81,7 +81,7 @@ class UserAppTests(TestCase):
     def test_home_page(self):
         response = self.client.get(reverse('core:home'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'LUXE')
+        self.assertContains(response, 'CURTAINS')
         self.assertContains(response, 'Imperial Champagne Gold Velvet')
         self.assertContains(response, 'Royal Velvet')
 

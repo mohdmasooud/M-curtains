@@ -1,5 +1,5 @@
 /**
- * LuxeDrape Admin Charts Initialization (Chart.js)
+ * M Curtains Admin Charts Initialization (Chart.js)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
