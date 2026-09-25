@@ -72,37 +72,39 @@ WSGI_APPLICATION = 'curtain_shop.wsgi.application'
 # Database
 # On Windows (local development), use the project sqlite database directly.
 # On Linux (Vercel Serverless / AWS Lambda), the deployment root (/var/task) is read-only.
-# We copy the seeded db.sqlite3 to /tmp/db.sqlite3 so SQLite has full read & write access.
+# We copy the seeded db.sqlite3 to /tmp/db.sqlite3 with full read & write permissions (0o777).
 import sys
-import shutil
 
-if sys.platform == 'win32':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
+SQLITE_PATH = BASE_DIR / 'db.sqlite3'
+
+if sys.platform != 'win32':
     tmp_db = Path('/tmp') / 'db.sqlite3'
-    src_db = BASE_DIR / 'db.sqlite3'
     try:
-        if not tmp_db.exists() or tmp_db.stat().st_size == 0:
-            if src_db.exists():
-                shutil.copyfile(src_db, tmp_db)
-            else:
-                tmp_db.touch()
-        if tmp_db.exists():
-            os.chmod(str(tmp_db), 0o666)
+        if SQLITE_PATH.exists():
+            if not tmp_db.exists() or tmp_db.stat().st_size == 0:
+                with open(SQLITE_PATH, 'rb') as f_in:
+                    with open(tmp_db, 'wb') as f_out:
+                        f_out.write(f_in.read())
+                os.chmod(str(tmp_db), 0o777)
+        SQLITE_PATH = tmp_db
     except Exception as e:
-        print("Notice: Error copying database to /tmp:", e)
+        print("Database /tmp copy notice:", e)
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': str(tmp_db),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(SQLITE_PATH),
+        'OPTIONS': {
+            'timeout': 20,
+        },
     }
+}
+
+# Use signed cookie session engine for stateless serverless environments (Vercel)
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
