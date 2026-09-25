@@ -62,21 +62,36 @@ TEMPLATES = [
 WSGI_APPLICATION = 'curtain_shop.wsgi.application'
 
 # Database
-# On Vercel serverless environment, the root directory is read-only.
-# Copy seeded db.sqlite3 to writable /tmp directory if running on Vercel.
+# On Vercel / AWS Lambda serverless environment, the root directory is read-only.
+# We copy the seeded db.sqlite3 to writable /tmp directory to allow full read & write access.
 import shutil
 
-IS_VERCEL = os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV')
+IS_SERVERLESS = (
+    os.environ.get('VERCEL') is not None
+    or os.environ.get('VERCEL_ENV') is not None
+    or os.environ.get('AWS_LAMBDA_FUNCTION_NAME') is not None
+    or os.environ.get('LAMBDA_TASK_ROOT') is not None
+    or str(BASE_DIR).startswith('/var/task')
+    or not os.access(str(BASE_DIR), os.W_OK)
+)
 
-if IS_VERCEL:
-    tmp_db = Path('/tmp') / 'db.sqlite3'
+if IS_SERVERLESS:
+    tmp_dir = Path('/tmp')
+    tmp_db = tmp_dir / 'db.sqlite3'
     src_db = BASE_DIR / 'db.sqlite3'
-    if not tmp_db.exists() and src_db.exists():
-        try:
-            shutil.copyfile(src_db, tmp_db)
-        except Exception:
-            pass
-    db_path = tmp_db if tmp_db.exists() else src_db
+    
+    try:
+        if not tmp_db.exists() or tmp_db.stat().st_size == 0:
+            if src_db.exists():
+                shutil.copyfile(src_db, tmp_db)
+            else:
+                tmp_db.touch()
+        if tmp_db.exists():
+            os.chmod(str(tmp_db), 0o666)
+    except Exception as e:
+        print("Notice: Error preparing sqlite database in /tmp:", e)
+        
+    db_path = str(tmp_db) if tmp_db.exists() else str(src_db)
 else:
     db_path = BASE_DIR / 'db.sqlite3'
 
