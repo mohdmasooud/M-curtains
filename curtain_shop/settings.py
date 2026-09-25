@@ -62,27 +62,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'curtain_shop.wsgi.application'
 
 # Database
-# On Vercel / AWS Lambda / Serverless environments, the project folder is read-only.
-# We copy the seeded db.sqlite3 to the writable /tmp directory so SQLite can read & write freely.
+# On Windows (local development), use the project sqlite database directly.
+# On Linux (Vercel Serverless / AWS Lambda), the deployment root (/var/task) is read-only.
+# We copy the seeded db.sqlite3 to /tmp/db.sqlite3 so SQLite has full read & write access.
 import sys
 import shutil
 
-def is_local_writable_env():
-    if sys.platform == 'win32' and not os.environ.get('VERCEL') and not os.environ.get('VERCEL_ENV'):
-        return True
-    test_probe = BASE_DIR / '.write_probe.tmp'
-    try:
-        test_probe.write_text('probe')
-        test_probe.unlink()
-        return True
-    except Exception:
-        return False
-
-if not is_local_writable_env():
-    tmp_dir = Path('/tmp')
-    tmp_db = tmp_dir / 'db.sqlite3'
+if sys.platform == 'win32':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    tmp_db = Path('/tmp') / 'db.sqlite3'
     src_db = BASE_DIR / 'db.sqlite3'
-    
     try:
         if not tmp_db.exists() or tmp_db.stat().st_size == 0:
             if src_db.exists():
@@ -92,18 +87,14 @@ if not is_local_writable_env():
         if tmp_db.exists():
             os.chmod(str(tmp_db), 0o666)
     except Exception as e:
-        print("Notice: Error preparing sqlite database in /tmp:", e)
-        
-    db_path = str(tmp_db) if tmp_db.exists() else str(src_db)
-else:
-    db_path = BASE_DIR / 'db.sqlite3'
+        print("Notice: Error copying database to /tmp:", e)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': db_path,
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(tmp_db),
+        }
     }
-}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
