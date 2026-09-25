@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -61,11 +62,28 @@ TEMPLATES = [
 WSGI_APPLICATION = 'curtain_shop.wsgi.application'
 
 # Database
-# Using SQLite as default SQL engine (Django ORM provides seamless SQL queries)
+# On Vercel serverless environment, the root directory is read-only.
+# Copy seeded db.sqlite3 to writable /tmp directory if running on Vercel.
+import shutil
+
+IS_VERCEL = os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV')
+
+if IS_VERCEL:
+    tmp_db = Path('/tmp') / 'db.sqlite3'
+    src_db = BASE_DIR / 'db.sqlite3'
+    if not tmp_db.exists() and src_db.exists():
+        try:
+            shutil.copyfile(src_db, tmp_db)
+        except Exception:
+            pass
+    db_path = tmp_db if tmp_db.exists() else src_db
+else:
+    db_path = BASE_DIR / 'db.sqlite3'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': db_path,
     }
 }
 
@@ -95,6 +113,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Media files (Uploaded images, attachments)
 MEDIA_URL = '/media/'
