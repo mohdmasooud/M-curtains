@@ -18,6 +18,7 @@ venv.bak/
 local_settings.py
 db.sqlite3-journal
 staticfiles/
+staticfiles_build/
 
 # IDE & Editor specific files
 .vscode/
