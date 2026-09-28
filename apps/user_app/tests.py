@@ -145,6 +145,28 @@ class UserAppTests(TestCase):
         # Measurement guide
         response = self.client.get(reverse('core:measurement_guide'))
         self.assertEqual(response.status_code, 200)
+        self.assertIn('products', response.context)
+        self.assertIn('pleats', response.context)
+        self.assertIn('linings', response.context)
+
+        # Measurement guide consultation POST
+        consult_response = self.client.post(reverse('core:measurement_guide'), {
+            'consultation_request': '1',
+            'name': 'Lady Gwendolyn',
+            'email': 'gwen@atelier.com',
+            'message': 'Need master measuring for bay window 380x240cm'
+        })
+        self.assertEqual(consult_response.status_code, 302)
+
+        # Calculator Add Custom Curtains to Bag
+        cart_add_response = self.client.post(reverse('cart:cart_add', kwargs={'product_id': self.product.id}), {
+            'quantity': 2,
+            'width_cm': '220',
+            'drop_cm': '243.5',
+            'pleat_type': str(self.pleat.id),
+            'lining_type': str(self.lining.id)
+        })
+        self.assertEqual(cart_add_response.status_code, 302)
 
         # About page
         response = self.client.get(reverse('core:about'))

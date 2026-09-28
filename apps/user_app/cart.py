@@ -17,8 +17,8 @@ class Cart:
         self.coupon = Coupon.objects.filter(id=coupon_id, is_active=True).first() if coupon_id else None
 
     def add(self, product, quantity=1, width_cm=None, drop_cm=None, pleat_id=None, lining_id=None, override_quantity=False):
-        width = int(width_cm or product.default_width_cm)
-        drop = int(drop_cm or product.default_drop_cm)
+        width = int(round(float(width_cm or product.default_width_cm)))
+        drop = int(round(float(drop_cm or product.default_drop_cm)))
         pleat = PleatType.objects.filter(id=pleat_id).first() if pleat_id else None
         lining = LiningType.objects.filter(id=lining_id).first() if lining_id else None
 

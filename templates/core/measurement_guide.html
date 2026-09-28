@@ -1,134 +1,804 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Curtain Measurement & Sizing Calculator | M Curtains{% endblock %}
+{% block title %}Bespoke Curtain Measurement & Sizing Calculator | M Curtains Atelier{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/calculator_studio.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <!-- Header -->
-  <div class="text-center max-w-700 mx-auto mb-5">
-    <span class="text-uppercase fw-bold small text-warning letter-spacing-1">Precision Fit</span>
-    <h1 class="display-5 fw-bold font-serif mb-3">Curtain Measurement Calculator</h1>
-    <p class="text-muted lead">
-      Calculate the exact number of panels, pleat fullness ratio, and fabric yardage required for your window track or rod.
+<div id="calculatorStudioRoot" class="container-fluid px-3 px-lg-5 py-5">
+  
+  <!-- Django Messages Alert Banner -->
+  {% if messages %}
+    <div class="max-w-900 mx-auto mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-3 p-3" role="alert">
+          <i class="fas fa-check-circle text-success fs-4"></i>
+          <div>{{ message }}</div>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- =========================================================================
+       1. HERO & TOP CONFIGURATION TOOLBAR
+       ========================================================================= -->
+  <div class="text-center max-w-800 mx-auto mb-5">
+    <div class="calc-hero-badge mb-3">
+      <span class="calc-pulse-dot"></span>
+      <span>Precision Sizing Studio • Intelligent Fitting Engine</span>
+    </div>
+    <h1 class="display-5 fw-bold font-serif mb-3 text-dark">
+      Curtain Measurement & Fabric Calculator
+    </h1>
+    <p class="text-muted lead fs-6">
+      Calculate millimeter-exact panel cuts, pleat fullness ratios, stack-back clearance, and fabric yardage with live interactive visual simulation.
     </p>
+
+    <!-- Unit Switcher Segmented Control -->
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mt-4">
+      <div class="d-flex align-items-center gap-2">
+        <span class="small fw-bold text-muted text-uppercase letter-spacing-1 font-modern" style="font-size: 0.75rem;">Units:</span>
+        <div class="calc-unit-pill-group">
+          <button type="button" class="calc-unit-btn active" data-unit="cm">Centimetres (cm)</button>
+          <button type="button" class="calc-unit-btn" data-unit="in">Inches (in)</button>
+          <button type="button" class="calc-unit-btn" data-unit="ft">Feet (ft)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Size Presets Bar -->
+    <div class="mt-4 pt-2">
+      <div class="small fw-bold text-muted text-uppercase mb-2 letter-spacing-1 font-modern" style="font-size: 0.72rem;">
+        <i class="fas fa-bolt text-warning me-1"></i> Quick Window Presets
+      </div>
+      <div class="calc-presets-scroll justify-content-start justify-content-md-center">
+        <button type="button" class="calc-preset-chip" data-width="150" data-drop="180" data-split="pair" data-style="floating">
+          <i class="fas fa-bed"></i> Standard Bedroom (150 × 180 cm)
+        </button>
+        <button type="button" class="calc-preset-chip active" data-width="220" data-drop="245" data-split="pair" data-style="floating">
+          <i class="fas fa-door-open"></i> French Balcony Door (220 × 245 cm)
+        </button>
+        <button type="button" class="calc-preset-chip" data-width="320" data-drop="280" data-split="pair" data-style="kiss">
+          <i class="fas fa-building"></i> Floor-to-Ceiling Living (320 × 280 cm)
+        </button>
+        <button type="button" class="calc-preset-chip" data-width="380" data-drop="240" data-split="pair" data-style="puddle">
+          <i class="fas fa-gem"></i> Grand Bay Window (380 × 240 cm)
+        </button>
+        <button type="button" class="calc-preset-chip" data-width="120" data-drop="130" data-split="single_left" data-style="sill">
+          <i class="fas fa-coffee"></i> Kitchen / Sill (120 × 130 cm)
+        </button>
+      </div>
+    </div>
   </div>
 
-  <div class="row g-5">
-    <!-- Calculator Form Column -->
-    <div class="col-lg-6">
-      <div class="customizer-panel h-100">
-        <h4 class="fw-bold mb-4 font-serif"><i class="fas fa-calculator text-warning me-2"></i> Window Dimensions Calculator</h4>
+
+  <!-- =========================================================================
+       2. MAIN INTERACTIVE 2-COLUMN ATELIER WORKSPACE
+       ========================================================================= -->
+  <div class="row g-4 g-xl-5 align-items-start">
+    
+    <!-- =======================================================================
+         LEFT COLUMN: THE BESPOKE CONFIGURATOR
+         ======================================================================= -->
+    <div class="col-xl-7">
+      
+      <!-- Card 0: Select Drapery Product / Fabric -->
+      <div class="calc-card-panel mb-4">
+        <div class="calc-section-header">
+          <h4 class="calc-section-title">
+            <span class="calc-step-badge"><i class="fas fa-palette" style="font-size: 0.65rem;"></i></span>
+            <span>Choose Drapery Fabric & Curtain Line</span>
+          </h4>
+          <span class="badge bg-warning text-dark font-modern px-3 py-1 fw-bold">Live Atelier Catalog</span>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-muted text-uppercase letter-spacing-1 font-modern mb-2">
+            Select Curtain to Size & Price
+          </label>
+          <select id="calcProductSelector" class="form-select form-select-lg rounded-3 border-secondary-subtle">
+            {% for prod in products %}
+              <option value="{{ prod.id }}" 
+                      data-id="{{ prod.id }}"
+                      data-name="{{ prod.name }}"
+                      data-price="{{ prod.current_price }}"
+                      data-color="{{ prod.color_hex }}"
+                      data-color-name="{{ prod.color_name }}"
+                      data-image="{{ prod.display_image }}"
+                      data-slug="{{ prod.slug }}"
+                      data-category="{{ prod.category.name }}"
+                      data-width="{{ prod.default_width_cm }}"
+                      data-drop="{{ prod.default_drop_cm }}"
+                      {% if forloop.first %}selected{% endif %}>
+                {{ prod.name }} — ₹{{ prod.current_price }} ({{ prod.category.name }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Live Selected Product Visual Banner -->
+        <div class="calc-selected-product-card" id="selectedProductCard">
+          <img id="selectedProductImg" src="{% if products.0 %}{{ products.0.display_image }}{% else %}{% static 'images/curtain_gold_velvet.jpg' %}{% endif %}" alt="Selected Drapery" class="calc-prod-thumb">
+          <div class="calc-prod-info">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span id="selectedProductColorDot" class="calc-prod-swatch-dot" style="background-color: {% if products.0 %}{{ products.0.color_hex }}{% else %}#C5A880{% endif %};"></span>
+              <span id="selectedProductColorName" class="small fw-bold text-dark font-modern">{% if products.0 %}{{ products.0.color_name }}{% else %}Champagne Gold{% endif %}</span>
+              <span class="badge bg-light text-muted border small font-modern" id="selectedProductCategory">{% if products.0 %}{{ products.0.category.name }}{% else %}Luxury Drapes{% endif %}</span>
+            </div>
+            <div id="selectedProductTitle" class="calc-prod-title">
+              {% if products.0 %}{{ products.0.name }}{% else %}Champagne Gold Heavy Velvet Drape{% endif %}
+            </div>
+            <div class="calc-prod-meta">
+              <span>Base: <strong class="text-dark">₹<span id="selectedProductBasePrice">{% if products.0 %}{{ products.0.current_price }}{% else %}2,899{% endif %}</span></strong></span>
+              <span>•</span>
+              <a id="selectedProductLink" href="{% if products.0 %}{% url 'products:product_detail' slug=products.0.slug %}{% else %}#{% endif %}" class="text-warning text-decoration-none fw-bold" target="_blank">
+                View Full Textile Specs &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 1: Track & Window Dimensions -->
+      <div class="calc-card-panel mb-4">
+        <div class="calc-section-header">
+          <h4 class="calc-section-title">
+            <span class="calc-step-badge">1</span>
+            <span>Track & Window Dimensions</span>
+          </h4>
+          <span class="badge bg-light text-muted border font-modern px-3 py-1">Step 1 of 4</span>
+        </div>
+
+        <div class="row g-4">
+          <!-- Width Input -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold d-flex justify-content-between align-items-center mb-1">
+              <span>Track / Rod Total Width</span>
+              <span class="small text-muted fw-normal">Excluding finials</span>
+            </label>
+            <div class="calc-input-wrapper">
+              <div class="d-flex align-items-center justify-content-between">
+                <input type="number" id="calcTrackWidthNum" class="calc-number-input" value="220" min="40" max="800" step="1">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="calc-unit-tag dynamic-unit-label">cm</span>
+                  <div class="calc-step-btn-group">
+                    <button type="button" class="calc-step-btn" data-target="width" data-step="-10" title="Decrease 10">-10</button>
+                    <button type="button" class="calc-step-btn" data-target="width" data-step="10" title="Increase 10">+10</button>
+                  </div>
+                </div>
+              </div>
+              <input type="range" id="calcTrackWidthRange" class="calc-range-slider" min="50" max="600" value="220" step="5">
+            </div>
+            <div class="form-text small mt-1">
+              <i class="fas fa-info-circle text-warning me-1"></i> Full pole or track width where curtains glide.
+            </div>
+          </div>
+
+          <!-- Drop Input -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold d-flex justify-content-between align-items-center mb-1">
+              <span>Desired Drop / Height</span>
+              <span class="small text-muted fw-normal">Top to floor or sill</span>
+            </label>
+            <div class="calc-input-wrapper">
+              <div class="d-flex align-items-center justify-content-between">
+                <input type="number" id="calcWindowDropNum" class="calc-number-input" value="245" min="40" max="600" step="1">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="calc-unit-tag dynamic-unit-label">cm</span>
+                  <div class="calc-step-btn-group">
+                    <button type="button" class="calc-step-btn" data-target="drop" data-step="-10" title="Decrease 10">-10</button>
+                    <button type="button" class="calc-step-btn" data-target="drop" data-step="10" title="Increase 10">+10</button>
+                  </div>
+                </div>
+              </div>
+              <input type="range" id="calcWindowDropRange" class="calc-range-slider" min="50" max="450" value="245" step="5">
+            </div>
+            <div class="form-text small mt-1">
+              <i class="fas fa-info-circle text-warning me-1"></i> From rod / track top down to floor, sill, or below sill.
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Split & Hardware Type Selector -->
+        <div class="row g-3 mt-3 pt-3 border-top">
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-muted text-uppercase letter-spacing-1 font-modern mb-2">Panel Configuration</label>
+            <div class="calc-grid-options" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="calc-opt-card calc-split-opt selected" data-split="pair">
+                <i class="fas fa-columns calc-opt-icon"></i>
+                <div class="calc-opt-title">Pair</div>
+                <div class="calc-opt-desc">2 Panels Center Split</div>
+              </div>
+              <div class="calc-opt-card calc-split-opt" data-split="single_left">
+                <i class="fas fa-arrow-left calc-opt-icon"></i>
+                <div class="calc-opt-title">Single Left</div>
+                <div class="calc-opt-desc">Stack to Left Wall</div>
+              </div>
+              <div class="calc-opt-card calc-split-opt" data-split="single_right">
+                <i class="fas fa-arrow-right calc-opt-icon"></i>
+                <div class="calc-opt-title">Single Right</div>
+                <div class="calc-opt-desc">Stack to Right Wall</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-muted text-uppercase letter-spacing-1 font-modern mb-2">Mounting Hardware</label>
+            <div class="calc-grid-options" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="calc-opt-card calc-hardware-opt selected" data-hardware="track">
+                <i class="fas fa-ellipsis-h calc-opt-icon"></i>
+                <div class="calc-opt-title">Ceiling Track</div>
+                <div class="calc-opt-desc">Glider Track</div>
+              </div>
+              <div class="calc-opt-card calc-hardware-opt" data-hardware="pole_rings">
+                <i class="fas fa-circle-notch calc-opt-icon"></i>
+                <div class="calc-opt-title">Pole & Rings</div>
+                <div class="calc-opt-desc">Rings Hooked</div>
+              </div>
+              <div class="calc-opt-card calc-hardware-opt" data-hardware="grommet">
+                <i class="fas fa-dot-circle calc-opt-icon"></i>
+                <div class="calc-opt-title">Eyelet / Grommet</div>
+                <div class="calc-opt-desc">Through Rod</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Card 2: Hanging Style & Floor Clearance -->
+      <div class="calc-card-panel mb-4">
+        <div class="calc-section-header">
+          <h4 class="calc-section-title">
+            <span class="calc-step-badge">2</span>
+            <span>Hanging Style & Floor Clearance</span>
+          </h4>
+          <span class="badge bg-light text-muted border font-modern px-3 py-1">Step 2 of 4</span>
+        </div>
+
+        <div class="calc-grid-options" style="grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));">
+          <!-- Floating -->
+          <div class="calc-opt-card calc-hanging-opt selected" data-style="floating">
+            <i class="fas fa-arrows-alt-v calc-opt-icon"></i>
+            <div class="calc-opt-title">Hover / Floating</div>
+            <div class="calc-opt-desc">1.5 cm above floor. Crisp, modern, easy to vacuum.</div>
+            <div class="calc-opt-badge">-1.5 cm</div>
+          </div>
+
+          <!-- Tailored Kiss -->
+          <div class="calc-opt-card calc-hanging-opt" data-style="kiss">
+            <i class="fas fa-hand-holding-water calc-opt-icon"></i>
+            <div class="calc-opt-title">Tailored Kiss</div>
+            <div class="calc-opt-desc">Exact floor touch. Master tailor European benchmark.</div>
+            <div class="calc-opt-badge">Exact 0 cm</div>
+          </div>
+
+          <!-- Soft Breaking -->
+          <div class="calc-opt-card calc-hanging-opt" data-style="break">
+            <i class="fas fa-wave-square calc-opt-icon"></i>
+            <div class="calc-opt-title">Soft Break</div>
+            <div class="calc-opt-desc">+2 cm hem resting on floor for casual relaxed elegance.</div>
+            <div class="calc-opt-badge">+2.0 cm</div>
+          </div>
+
+          <!-- Opulent Puddle -->
+          <div class="calc-opt-card calc-hanging-opt" data-style="puddle">
+            <i class="fas fa-water calc-opt-icon"></i>
+            <div class="calc-opt-title">Opulent Puddle</div>
+            <div class="calc-opt-desc">+8 cm pooling. Supreme luxury for velvet & flax linen.</div>
+            <div class="calc-opt-badge">+8.0 cm</div>
+          </div>
+
+          <!-- Sill Length -->
+          <div class="calc-opt-card calc-hanging-opt" data-style="sill">
+            <i class="fas fa-border-all calc-opt-icon"></i>
+            <div class="calc-opt-title">Sill Clearance</div>
+            <div class="calc-opt-desc">1 cm above window sill. Ideal for kitchens & radiators.</div>
+            <div class="calc-opt-badge">-1.0 cm</div>
+          </div>
+
+          <!-- Below Sill -->
+          <div class="calc-opt-card calc-hanging-opt" data-style="below_sill">
+            <i class="fas fa-ruler-vertical calc-opt-icon"></i>
+            <div class="calc-opt-title">Below Sill Apron</div>
+            <div class="calc-opt-desc">+15 cm below window sill. Warm bedroom insulation.</div>
+            <div class="calc-opt-badge">+15.0 cm</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Card 3: Header Style & Pleat Fullness -->
+      <div class="calc-card-panel mb-4">
+        <div class="calc-section-header">
+          <h4 class="calc-section-title">
+            <span class="calc-step-badge">3</span>
+            <span>Pleat Style & Fullness Multiplier</span>
+          </h4>
+          <span class="badge bg-light text-muted border font-modern px-3 py-1">Step 3 of 4</span>
+        </div>
+
+        <div class="calc-grid-options" style="grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));">
+          {% for pleat in pleats %}
+            <div class="calc-opt-card calc-pleat-opt {% if forloop.counter == 2 or forloop.first and pleats|length == 1 %}selected{% endif %}" 
+                 data-id="{{ pleat.id }}"
+                 data-fullness="{{ pleat.fullness_multiplier }}"
+                 data-cost="{{ pleat.extra_cost }}"
+                 data-name="{{ pleat.name }}">
+              <i class="fas {% if 'Eyelet' in pleat.name %}fa-ring{% elif 'Wave' in pleat.name %}fa-stream{% elif 'Pencil' in pleat.name %}fa-bars{% elif 'Box' in pleat.name %}fa-square{% else %}fa-layer-group{% endif %} calc-opt-icon"></i>
+              <div class="calc-opt-title">{{ pleat.name }}</div>
+              <div class="calc-opt-desc">{{ pleat.description|truncatewords:8 }}</div>
+              <div class="calc-opt-badge">
+                {{ pleat.fullness_multiplier }}x Fullness {% if pleat.extra_cost > 0 %}(+₹{{ pleat.extra_cost }}){% else %}(Included){% endif %}
+              </div>
+            </div>
+          {% empty %}
+            <div class="calc-opt-card calc-pleat-opt selected" data-id="1" data-fullness="2.0" data-cost="250" data-name="Pinch Pleat (Double / Triple)">
+              <i class="fas fa-layer-group calc-opt-icon"></i>
+              <div class="calc-opt-title">Pinch Pleat</div>
+              <div class="calc-opt-desc">Classic tailored header</div>
+              <div class="calc-opt-badge">2.0x Fullness</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+
+      <!-- Card 4: Lining Option -->
+      <div class="calc-card-panel mb-4">
+        <div class="calc-section-header">
+          <h4 class="calc-section-title">
+            <span class="calc-step-badge">4</span>
+            <span>Lining & Thermal Shield</span>
+          </h4>
+          <span class="badge bg-light text-muted border font-modern px-3 py-1">Step 4 of 4</span>
+        </div>
+
+        <div class="calc-grid-options" style="grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));">
+          {% for lining in linings %}
+            <div class="calc-opt-card calc-lining-opt {% if forloop.first %}selected{% endif %}" 
+                 data-id="{{ lining.id }}"
+                 data-cost="{{ lining.extra_cost }}"
+                 data-name="{{ lining.name }}">
+              <i class="fas {% if 'Blackout' in lining.name %}fa-moon{% elif 'Acoustic' in lining.name %}fa-volume-mute{% elif 'Satin' in lining.name %}fa-shield-halved{% else %}fa-feather{% endif %} calc-opt-icon"></i>
+              <div class="calc-opt-title">{{ lining.name|truncatewords:4 }}</div>
+              <div class="calc-opt-desc">{{ lining.description|truncatewords:8 }}</div>
+              <div class="calc-opt-badge">
+                {% if lining.extra_cost > 0 %}+₹{{ lining.extra_cost }}{% else %}Included (₹0){% endif %}
+              </div>
+            </div>
+          {% empty %}
+            <div class="calc-opt-card calc-lining-opt selected" data-id="1" data-cost="0" data-name="Standard Unlined">
+              <i class="fas fa-feather calc-opt-icon"></i>
+              <div class="calc-opt-title">Standard Unlined</div>
+              <div class="calc-opt-desc">Light natural drape</div>
+              <div class="calc-opt-badge">Included (₹0)</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- =======================================================================
+         RIGHT COLUMN: DYNAMIC 2D SIMULATOR & LIVE SPECIFICATION SUMMARY
+         ======================================================================= -->
+    <div class="col-xl-5">
+      <div class="sticky-top" style="top: 90px; z-index: 10;">
         
-        <form id="standaloneGuideForm">
-          <!-- Step 1: Track / Rod Width -->
-          <div class="mb-4">
-            <label class="form-label fw-bold" for="guideTrackWidth">
-              1. Curtain Track / Rod Total Width (cm)
-            </label>
-            <div class="input-group">
-              <input type="number" class="form-control form-control-lg" id="guideTrackWidth" value="220" min="50" max="1000" required>
-              <span class="input-group-text">cm</span>
+        <!-- Live Window Visualizer Card -->
+        <div class="calc-simulator-card mb-4">
+          <div class="calc-sim-topbar">
+            <div class="calc-sim-title">
+              <i class="fas fa-eye text-warning"></i>
+              <span>Live Visual Simulation</span>
             </div>
-            <div class="form-text">Measure the full width of your track or pole, excluding decorative end finials.</div>
-          </div>
-
-          <!-- Step 2: Drop / Length -->
-          <div class="mb-4">
-            <label class="form-label fw-bold" for="guideWindowDrop">
-              2. Desired Drop / Height (cm)
-            </label>
-            <div class="input-group">
-              <input type="number" class="form-control form-control-lg" id="guideWindowDrop" value="245" min="50" max="600" required>
-              <span class="input-group-text">cm</span>
-            </div>
-            <div class="form-text">Measure from top of track/pole to sill, below sill, or floor.</div>
-          </div>
-
-          <!-- Step 3: Header Fullness -->
-          <div class="mb-4">
-            <label class="form-label fw-bold" for="guideFullness">
-              3. Pleat Style & Fullness
-            </label>
-            <select class="form-select form-select-lg" id="guideFullness">
-              <option value="1.5">Standard Gather (1.5x Fullness)</option>
-              <option value="2.0" selected>Classic Full Drape (2.0x Fullness - Recommended)</option>
-              <option value="2.5">Opulent Luxury Heavy Pleats (2.5x Fullness)</option>
-            </select>
-            <div class="form-text">Fullness determines the density and deep waves of the curtain when closed.</div>
-          </div>
-
-          <button type="submit" class="btn btn-gold btn-lg w-100 mt-3">
-            <i class="fas fa-magic me-2"></i> Calculate Curtain Specs
-          </button>
-        </form>
-
-        <!-- Calculation Results Box -->
-        <div id="guideResultBox" class="mt-4 p-4 rounded-3 bg-light border border-warning" style="display: none;">
-          <h5 class="fw-bold font-serif text-dark mb-3"><i class="fas fa-check-circle text-success me-2"></i> Recommended Specifications:</h5>
-          <div class="row g-3">
-            <div class="col-6">
-              <div class="small text-muted">Recommended Panels</div>
-              <div class="fs-5 fw-bold text-dark" id="resultPanelsCount">-</div>
-            </div>
-            <div class="col-6">
-              <div class="small text-muted">Total Gathered Width</div>
-              <div class="fs-5 fw-bold text-dark" id="resultTotalWidth">-</div>
-            </div>
-            <div class="col-6">
-              <div class="small text-muted">Finished Drop Length</div>
-              <div class="fs-5 fw-bold text-dark" id="resultRecommendedDrop">-</div>
-            </div>
-            <div class="col-6">
-              <div class="small text-muted">Estimated Fabric Yardage</div>
-              <div class="fs-5 fw-bold text-dark text-warning" id="resultYardage">-</div>
+            
+            <!-- Fabric Color Swatches -->
+            <div class="calc-color-swatches" title="Preview fabric color">
+              <div class="calc-color-swatch active" style="background-color: #C5A880;" data-color="#C5A880" data-name="Champagne Gold" title="Champagne Gold"></div>
+              <div class="calc-color-swatch" style="background-color: #0B1329;" data-color="#0B1329" data-name="Imperial Navy" title="Imperial Navy"></div>
+              <div class="calc-color-swatch" style="background-color: #105943;" data-color="#105943" data-name="Emerald Silk" title="Emerald Silk"></div>
+              <div class="calc-color-swatch" style="background-color: #EAE3D2;" data-color="#EAE3D2" data-name="Pearl Linen" title="Pearl Linen"></div>
+              <div class="calc-color-swatch" style="background-color: #6A1A24;" data-color="#6A1A24" data-name="Bordeaux Velvet" title="Bordeaux Velvet"></div>
             </div>
           </div>
 
-          <div class="mt-4 pt-3 border-top d-flex gap-2">
-            <a href="{% url 'products:product_list' %}" class="btn btn-navy btn-sm rounded-pill px-4">
-              Browse Compatible Fabrics
-            </a>
+          <!-- Dynamic SVG Stage -->
+          <div class="calc-stage-wrapper">
+            <svg id="curtainSvgStage" class="calc-svg-canvas" viewBox="0 0 560 320" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+
+          <!-- Interactive Draw Curtains Slider -->
+          <div class="calc-sim-controls-strip">
+            <span class="small opacity-75"><i class="fas fa-sliders-h text-warning me-1"></i> Draw / Open Curtains:</span>
+            <div style="width: 140px;">
+              <input type="range" id="calcDrawCurtainSlider" class="calc-range-slider m-0" min="0" max="100" value="15" title="Slide to test stack-back clearance">
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Specifications Summary & Add-to-Cart Card -->
+        <div class="calc-specs-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold font-serif mb-0 text-dark">
+              <i class="fas fa-clipboard-check text-warning me-2"></i> Custom Specifications
+            </h5>
+            <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-1 font-modern">
+              <i class="fas fa-check-circle me-1"></i> Precision Verified
+            </span>
+          </div>
+
+          <!-- Metric Grid -->
+          <div class="calc-metric-grid">
+            <!-- Panels -->
+            <div class="calc-metric-box highlight">
+              <div class="calc-metric-label">
+                <i class="fas fa-columns text-warning"></i> Recommended Panels
+              </div>
+              <div class="calc-metric-value" id="outPanelsCount">2 Panels (1 Pair)</div>
+              <div class="calc-metric-subtext">Optimized for 140cm textile rolls</div>
+            </div>
+
+            <!-- Finished Drop -->
+            <div class="calc-metric-box">
+              <div class="calc-metric-label">
+                <i class="fas fa-arrows-alt-v text-warning"></i> Finished Drop Length
+              </div>
+              <div class="calc-metric-value" id="outFinishedDrop">243.5 cm</div>
+              <div class="calc-metric-subtext" id="outCutLength">265.5 cm cut length</div>
+            </div>
+
+            <!-- Fabric Yardage -->
+            <div class="calc-metric-box highlight">
+              <div class="calc-metric-label">
+                <i class="fas fa-scroll text-warning"></i> Fabric Required
+              </div>
+              <div class="calc-metric-value text-warning" id="outFabricMeters">~10.5 m</div>
+              <div class="calc-metric-subtext" id="outTotalFlatWidth">440 cm flat fabric width</div>
+            </div>
+
+            <!-- Stack-Back & Hardware -->
+            <div class="calc-metric-box">
+              <div class="calc-metric-label">
+                <i class="fas fa-ruler-horizontal text-warning"></i> Stack-Back Clearance
+              </div>
+              <div class="calc-metric-value" id="outStackBack">~56 cm</div>
+              <div class="calc-metric-subtext" id="outHardwareRec">3 Brackets • 22 Rings</div>
+            </div>
+          </div>
+
+          <!-- Price Forecast Banner -->
+          <div class="calc-price-banner">
+            <div>
+              <div class="small text-light opacity-75 font-modern mb-1">CALCULATED BESPOKE PRICE</div>
+              <div class="calc-price-amount" id="outEstimatedPrice">₹24,350</div>
+              <div class="small text-light opacity-60 font-sans" id="outPriceBreakdown" style="font-size: 0.75rem;">
+                Custom tailored with double weights, buckram & selected lining
+              </div>
+            </div>
+            <i class="fas fa-shield-alt fs-2 text-warning opacity-75"></i>
+          </div>
+
+          <!-- REAL WORKING ADD-TO-CART FORM -->
+          <form id="bespokeAddToCartForm" method="POST" action="{% if products.0 %}{% url 'cart:cart_add' product_id=products.0.id %}{% else %}#{% endif %}">
+            {% csrf_token %}
+            <input type="hidden" name="width_cm" id="formWidthCm" value="220">
+            <input type="hidden" name="drop_cm" id="formDropCm" value="243.5">
+            <input type="hidden" name="pleat_type" id="formPleatId" value="{% if pleats.0 %}{{ pleats.0.id }}{% else %}1{% endif %}">
+            <input type="hidden" name="lining_type" id="formLiningId" value="{% if linings.0 %}{{ linings.0.id }}{% else %}1{% endif %}">
+
+            <!-- Quantity Selector Strip -->
+            <div class="d-flex align-items-center justify-content-between mb-3 p-3 bg-light rounded-3 border">
+              <div>
+                <div class="fw-bold small text-dark font-modern">Order Quantity</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Number of custom window sets</div>
+              </div>
+              <div class="calc-qty-wrapper">
+                <button type="button" class="calc-qty-btn" id="qtyMinusBtn">-</button>
+                <input type="number" name="quantity" id="calcQuantityInput" class="calc-qty-input" value="1" min="1" max="20" readonly>
+                <button type="button" class="calc-qty-btn" id="qtyPlusBtn">+</button>
+              </div>
+            </div>
+
+            <!-- Add to Cart Submit Button -->
+            <button type="submit" id="calcAddToCartBtn" class="calc-btn-cart-submit mb-2">
+              <i class="fas fa-shopping-bag"></i>
+              <span>Add Custom Curtains to Bag</span>
+            </button>
+          </form>
+
+          <!-- Open in 3D Atelier / Customizer -->
+          <a id="linkOpenCustomizer" href="{% if products.0 %}{% url 'products:product_detail' slug=products.0.slug %}?width=220&drop=245{% else %}#{% endif %}" class="btn btn-outline-dark rounded-pill py-2 font-modern fw-bold w-100 mb-3" style="font-size: 0.88rem;">
+            <i class="fas fa-cube text-warning me-2"></i> Open in 3D Drapery Customizer
+          </a>
+
+          <!-- Utility Action Buttons Strip -->
+          <div class="calc-action-strip">
+            <div class="row g-2">
+              <div class="col-6">
+                <button type="button" id="calcCopySpecsBtn" class="calc-btn-copy w-100">
+                  <i class="fas fa-copy me-1"></i> Copy Sizing Specs
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="button" id="calcPrintSpecsBtn" class="calc-btn-copy w-100">
+                  <i class="fas fa-print me-1"></i> Print Sizing Sheet
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-sm btn-light border rounded-pill py-2 font-modern fw-semibold text-muted w-100 mt-2" data-bs-toggle="modal" data-bs-target="#conciergeModal">
+              <i class="fas fa-user-tie text-warning me-1"></i> Ask an Atelier Master Tailor (Free)
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================================
+       3. INTERACTIVE STEP-BY-STEP "HOW TO MEASURE" VISUAL GUIDE
+       ========================================================================= -->
+  <div id="interactiveGuideSection" class="mt-5 pt-5 border-top">
+    <div class="text-center max-w-700 mx-auto mb-4">
+      <span class="calc-hero-badge mb-2">Master Tailor Handbook</span>
+      <h2 class="display-6 fw-bold font-serif mb-2 text-dark">How to Measure Your Windows Perfectly</h2>
+      <p class="text-muted small">Follow our 4-step artisan standard to ensure a bespoke fit with 0mm error margin.</p>
+    </div>
+
+    <!-- Guide Navigation Tabs -->
+    <div class="calc-guide-nav justify-content-center">
+      <button type="button" class="calc-guide-tab active" data-target="guideTabWidth">
+        <i class="fas fa-arrows-alt-h me-1 text-warning"></i> 1. Measuring Track & Pole Width
+      </button>
+      <button type="button" class="calc-guide-tab" data-target="guideTabDrop">
+        <i class="fas fa-arrows-alt-v me-1 text-warning"></i> 2. Measuring Finished Drop
+      </button>
+      <button type="button" class="calc-guide-tab" data-target="guideTabFullness">
+        <i class="fas fa-layer-group me-1 text-warning"></i> 3. Understanding Fullness Ratios
+      </button>
+      <button type="button" class="calc-guide-tab" data-target="guideTabProTips">
+        <i class="fas fa-lightbulb me-1 text-warning"></i> 4. Pro Secrets & Pitfalls
+      </button>
+    </div>
+
+    <!-- Tab 1: Measuring Width -->
+    <div id="guideTabWidth" class="calc-guide-pane">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <i class="fas fa-ruler-horizontal"></i>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">Curtain Track Width</h5>
+            <p class="small text-muted mb-0">
+              Measure the total end-to-end length of the track rail. If your track has an overlap in the middle, measure the full rail length plus the overlap distance.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <i class="fas fa-grip-lines"></i>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">Curtain Pole Width</h5>
+            <p class="small text-muted mb-0">
+              Measure the pole length <strong>between the finials</strong> (decorative end plugs). Never include the decorative finials in your width measurement.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <i class="fas fa-expand-arrows-alt"></i>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">No Track Fitted Yet?</h5>
+            <p class="small text-muted mb-0">
+              Measure the window frame width, then add <strong>15 to 25 cm on each side</strong> (30-50 cm total). This allows curtains to draw fully off the window glass.
+            </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Sizing Visual Guide Column -->
-    <div class="col-lg-6">
-      <div class="bg-white p-4 rounded-4 border shadow-sm">
-        <h4 class="fw-bold font-serif mb-4"><i class="fas fa-info-circle text-warning me-2"></i> Professional Hanging Styles</h4>
-        
-        <div class="d-flex gap-3 mb-4 p-3 bg-light rounded-3">
-          <div class="fs-2 text-warning"><i class="fas fa-arrows-alt-v"></i></div>
-          <div>
-            <h6 class="fw-bold mb-1">1. Hover / Floating (1-2 cm above floor)</h6>
-            <p class="small text-muted mb-0">Clean and contemporary. Avoids dust accumulation and lets curtains swing freely without touching floorboards.</p>
+    <!-- Tab 2: Measuring Drop -->
+    <div id="guideTabDrop" class="calc-guide-pane d-none">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <i class="fas fa-arrow-down"></i>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">From Curtain Tracks</h5>
+            <p class="small text-muted mb-0">
+              Measure from the very top of the track rail down to your desired bottom hem position (1.5cm above floor for floating, or touching floor).
+            </p>
           </div>
         </div>
-
-        <div class="d-flex gap-3 mb-4 p-3 bg-light rounded-3">
-          <div class="fs-2 text-warning"><i class="fas fa-hand-holding-water"></i></div>
-          <div>
-            <h6 class="fw-bold mb-1">2. Gentle Breaking / Kiss (Touches floor)</h6>
-            <p class="small text-muted mb-0">Add 1-2 cm to your measurement. The hem fabric breaks gently upon the floor for a tailored, elegant look.</p>
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <i class="fas fa-ring"></i>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">From Pole with Rings</h5>
+            <p class="small text-muted mb-0">
+              Measure from the <strong>small eyelet loop at the bottom of the curtain ring</strong> (where the hook inserts) down to the floor or sill.
+            </p>
           </div>
         </div>
-
-        <div class="d-flex gap-3 mb-4 p-3 bg-light rounded-3">
-          <div class="fs-2 text-warning"><i class="fas fa-water"></i></div>
-          <div>
-            <h6 class="fw-bold mb-1">3. Dramatic Puddle (5-10 cm pooling)</h6>
-            <p class="small text-muted mb-0">Best suited for heavyweight velvet and pure linen drapes. Creates a romantic, opulent chateau ambiance.</p>
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <i class="fas fa-dot-circle"></i>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">For Eyelet / Grommets</h5>
+            <p class="small text-muted mb-0">
+              Measure from the <strong>top of the pole</strong> down to the floor, then we automatically add 3.5cm header stand-up above the grommet hole.
+            </p>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="p-3 border border-warning rounded-3 bg-warning bg-opacity-10 mt-4">
-          <div class="fw-bold text-dark mb-1"><i class="fas fa-lightbulb text-warning me-2"></i> Designer Pro Tip:</div>
-          <p class="small text-muted mb-0">
-            Mount your curtain rod <strong>15–20 cm above the window frame</strong> and extend <strong>15–25 cm past each side</strong>. This visually doubles ceiling height and allows maximum daylight into the room!
-          </p>
+    <!-- Tab 3: Understanding Fullness -->
+    <div id="guideTabFullness" class="calc-guide-pane d-none">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <span class="fw-bold font-serif text-warning">1.5×</span>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">Standard Fullness (1.5x)</h5>
+            <p class="small text-muted mb-0">
+              Uses 1.5 times the track width in flat fabric. Gives a gentle, tailored wave. Best for lightweight sheer voiles, linen partitions, and budget rooms.
+            </p>
+          </div>
         </div>
+        <div class="col-md-4">
+          <div class="calc-guide-step-card border-warning">
+            <div class="calc-guide-img-box">
+              <span class="fw-bold font-serif text-warning">2.0×</span>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">Classic Full Drape (2.0x)</h5>
+            <p class="small text-muted mb-0">
+              <span class="badge bg-warning text-dark fw-bold mb-1">Recommended Standard</span><br>
+              Uses double your track width. Creates deep, elegant S-folds and luxurious fabric body when curtains are closed.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="calc-guide-step-card">
+            <div class="calc-guide-img-box">
+              <span class="fw-bold font-serif text-warning">2.5×</span>
+            </div>
+            <h5 class="fw-bold font-serif mb-2">Opulent Luxury (2.5x - 3.0x)</h5>
+            <p class="small text-muted mb-0">
+              Grand chateau aesthetic with dense, dramatic pinch pleats and maximum acoustic dampening. Ideal for heavyweight velvet and tall salons.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Pro Secrets & Pitfalls -->
+    <div id="guideTabProTips" class="calc-guide-pane d-none">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="p-4 rounded-4 bg-white border h-100 shadow-sm">
+            <h5 class="fw-bold font-serif text-dark mb-3"><i class="fas fa-check-circle text-success me-2"></i> Master Rules to Follow:</h5>
+            <ul class="small text-muted ps-3 mb-0" style="line-height: 2;">
+              <li><strong>Always measure with a metal tape measure</strong> (cloth tapes stretch over time and cause 2-3 cm errors).</li>
+              <li><strong>Measure in 3 places</strong> (left, center, right). Floors and ceilings are rarely perfectly level! Always use the shortest drop for floating hems.</li>
+              <li><strong>Check for radiator and sill projections</strong> so curtains fall cleanly without catching on handles.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-4 rounded-4 bg-white border h-100 shadow-sm">
+            <h5 class="fw-bold font-serif text-dark mb-3"><i class="fas fa-exclamation-triangle text-danger me-2"></i> Common Mistakes to Avoid:</h5>
+            <ul class="small text-muted ps-3 mb-0" style="line-height: 2;">
+              <li>Mounting curtain rods right against the window top (mount 15-20cm above to double perceived room height!).</li>
+              <li>Using only 1 panel for a wide window (stack-back becomes too bulky on one side).</li>
+              <li>Forgetting that velvet relaxes and stretches 0.5-1 cm under its own weight after hanging.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================================
+       4. POPULAR BESPOKE DRAPERY CATALOG CARDS
+       ========================================================================= -->
+  {% if featured_products %}
+  <div class="mt-5 pt-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <span class="calc-hero-badge mb-1">Tailored Atelier Lines</span>
+        <h3 class="display-6 fw-bold font-serif mb-0 text-dark">Popular Drapery to Customize</h3>
+      </div>
+      <a href="{% url 'products:product_list' %}" class="btn btn-luxe-outline-gold btn-sm d-none d-md-inline-flex">
+        View All Collections &rarr;
+      </a>
+    </div>
+
+    <div class="row g-4">
+      {% for product in featured_products %}
+        <div class="col-6 col-md-3">
+          <div class="product-card">
+            <div class="product-image-wrapper">
+              <img src="{{ product.display_image }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-body">
+              <a href="{% url 'products:product_detail' slug=product.slug %}" class="product-title small fw-bold">
+                {{ product.name }}
+              </a>
+              <div class="product-price-wrapper mt-auto pt-2">
+                <span class="price-current">₹{{ product.current_price }}</span>
+                <button type="button" class="btn btn-sm btn-luxe-outline-gold py-1 px-2 select-this-product-btn" 
+                        data-id="{{ product.id }}"
+                        style="font-size: 0.75rem;">
+                  Size This &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+
+<!-- ===========================================================================
+     CONCIERGE MEASUREMENT CONSULTATION MODAL
+     =========================================================================== -->
+<div class="modal fade" id="conciergeModal" tabindex="-1" aria-labelledby="conciergeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title font-serif fw-bold" id="conciergeModalLabel">
+          <i class="fas fa-gem text-warning me-2"></i> Book Artisan Measurement Concierge
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="small text-muted mb-4">
+          Need a master draper to verify your window dimensions or assist via video consultation? Leave your details and an M Curtains specialist will connect with you within 24 hours.
+        </p>
+        <form method="POST" action="{% url 'core:measurement_guide' %}">
+          {% csrf_token %}
+          <input type="hidden" name="consultation_request" value="1">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Your Name</label>
+            <input type="text" name="name" class="form-control rounded-3" placeholder="e.g. Lady Victoria Sterling" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Email or Phone Number</label>
+            <input type="text" name="email" class="form-control rounded-3" placeholder="e.g. victoria@atelier.com / +91 98765 43210" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Window Details & Specifications</label>
+            <textarea name="message" id="conciergeModalNotes" class="form-control rounded-3" rows="3" placeholder="Window location, room type, ceiling height or custom requests..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-luxe-gold w-100">
+            <i class="fas fa-paper-plane me-2"></i> Request Free Consultation
+          </button>
+        </form>
       </div>
     </div>
   </div>

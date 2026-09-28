@@ -100,14 +100,14 @@
               <div class="col-6">
                 <div class="input-group">
                   <span class="input-group-text small bg-light">Width</span>
-                  <input type="number" name="width_cm" id="customWidthInput" class="form-control" value="{{ product.default_width_cm }}" min="50" max="600" required>
+                  <input type="number" name="width_cm" id="customWidthInput" class="form-control" value="{{ initial_width|default:product.default_width_cm }}" min="50" max="600" required>
                   <span class="input-group-text small">cm</span>
                 </div>
               </div>
               <div class="col-6">
                 <div class="input-group">
                   <span class="input-group-text small bg-light">Drop</span>
-                  <input type="number" name="drop_cm" id="customDropInput" class="form-control" value="{{ product.default_drop_cm }}" min="50" max="600" required>
+                  <input type="number" name="drop_cm" id="customDropInput" class="form-control" value="{{ initial_drop|default:product.default_drop_cm }}" min="50" max="600" required>
                   <span class="input-group-text small">cm</span>
                 </div>
               </div>

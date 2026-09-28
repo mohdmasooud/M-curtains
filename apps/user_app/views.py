@@ -56,11 +56,21 @@ def room_visualizer_view(request):
 
 
 def measurement_guide_view(request):
+    if request.method == 'POST' and request.POST.get('consultation_request'):
+        name = request.POST.get('name', 'Valued Client')
+        messages.success(request, f"Thank you, {name}! Our master atelier draper has received your window specifications and will contact you within 24 hours.")
+        return redirect('user_app:measurement_guide')
+
     pleats = PleatType.objects.all()
     linings = LiningType.objects.all()
+    fabrics = Fabric.objects.all()
+    products = Product.objects.filter(is_available=True).select_related('category', 'fabric')
     context = {
         'pleats': pleats,
         'linings': linings,
+        'fabrics': fabrics,
+        'products': products,
+        'featured_products': products[:4],
     }
     return render(request, 'core/measurement_guide.html', context)
 
@@ -350,12 +360,21 @@ def product_detail_view(request, slug):
     linings = LiningType.objects.all()
     review_form = ProductReviewForm()
     
+    initial_width = request.GET.get('width', str(product.default_width_cm))
+    initial_drop = request.GET.get('drop', str(product.default_drop_cm))
+    initial_pleat_id = request.GET.get('pleat_id', '')
+    initial_lining_id = request.GET.get('lining_id', '')
+
     context = {
         'product': product,
         'related_products': related_products,
         'pleats': pleats,
         'linings': linings,
         'review_form': review_form,
+        'initial_width': initial_width,
+        'initial_drop': initial_drop,
+        'initial_pleat_id': initial_pleat_id,
+        'initial_lining_id': initial_lining_id,
     }
     return render(request, 'products/product_detail.html', context)
 
@@ -436,8 +455,8 @@ def cart_add_view(request, product_id):
         quantity = int(request.POST.get('quantity', 1))
         width_cm = request.POST.get('width_cm')
         drop_cm = request.POST.get('drop_cm')
-        pleat_id = request.POST.get('pleat_type')
-        lining_id = request.POST.get('lining_type')
+        pleat_id = request.POST.get('pleat_type') or request.POST.get('pleat_id')
+        lining_id = request.POST.get('lining_type') or request.POST.get('lining_id')
 
         cart.add(
             product=product,
@@ -447,7 +466,7 @@ def cart_add_view(request, product_id):
             pleat_id=pleat_id,
             lining_id=lining_id
         )
-        messages.success(request, f"Added {quantity}x '{product.name}' to your shopping bag.")
+        messages.success(request, f"Added {quantity}x '{product.name}' ({width_cm}cm × {drop_cm}cm) to your shopping bag.")
         return redirect('user_app:cart_detail')
 
     return redirect('user_app:product_detail', slug=product.slug)
