@@ -1,6 +1,6 @@
 from django import forms
-from apps.user_app.models import Product, Category, Fabric, Order, Coupon
-
+from apps.user_app.models import Product, Category, Order, Coupon
+ 
 class ProductAdminForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -46,18 +46,6 @@ class CategoryAdminForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'image_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
             'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        }
-
-
-class FabricAdminForm(forms.ModelForm):
-    class Meta:
-        model = Fabric
-        fields = ['name', 'slug', 'composition', 'care_instructions']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'slug': forms.TextInput(attrs={'class': 'form-control'}),
-            'composition': forms.TextInput(attrs={'class': 'form-control'}),
-            'care_instructions': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
 

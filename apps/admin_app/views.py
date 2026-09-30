@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages, auth
-from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Sum, Count, Q
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db import connection
-from apps.user_app.models import Product, Category, Fabric, ProductImage, Order, OrderItem, Coupon
+from apps.user_app.models import Product, Category, Order, Coupon
 from .decorators import staff_required
-from .forms import ProductAdminForm, CategoryAdminForm, FabricAdminForm, OrderStatusUpdateForm, CouponAdminForm
+from .forms import ProductAdminForm, CategoryAdminForm, OrderStatusUpdateForm, CouponAdminForm
 from decimal import Decimal
 import json
 import time

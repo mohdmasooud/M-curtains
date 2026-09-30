@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q, Avg
@@ -81,9 +80,104 @@ def about_view(request):
 
 def contact_view(request):
     if request.method == 'POST':
-        messages.success(request, "Thank you for contacting M Curtains Artisans. Our design concierge will contact you within 24 hours.")
+        name = request.POST.get('name', 'Valued Client')
+        booking_type = request.POST.get('booking_type', 'in_person')
+        showroom = request.POST.get('showroom', 'Beverly Hills Flagship Atelier')
+        preferred_date = request.POST.get('preferred_date', '')
+        time_slot = request.POST.get('time_slot', '')
+        
+        if booking_type == 'virtual':
+            messages.success(
+                request,
+                f"Thank you, {name}! Your 1-on-1 Virtual Drapery Consultation has been scheduled. "
+                "Our senior drapery consultant will email your private video room link and curated digital swatch kit within 2 hours."
+            )
+        elif booking_type == 'swatches':
+            messages.success(
+                request,
+                f"Thank you, {name}! Your Curated Atelier Swatch Box request has been received. "
+                "Our textile curators will assemble and dispatch your complimentary fabric presentation box within 24 hours."
+            )
+        else:
+            time_str = f" on {preferred_date} ({time_slot})" if preferred_date and time_slot else (f" on {preferred_date}" if preferred_date else "")
+            messages.success(
+                request,
+                f"Thank you, {name}! Your private atelier reservation at our {showroom}{time_str} has been received. "
+                "Our VIP Concierge will contact you within 2 hours to confirm your private suite and prepare your bespoke swatches."
+            )
         return redirect('user_app:contact')
-    return render(request, 'core/contact.html')
+
+    showrooms = [
+        {
+            'id': 'beverly-hills',
+            'city': 'Beverly Hills',
+            'title': 'Beverly Hills Flagship Atelier',
+            'badge': 'Global Flagship',
+            'address': '450 N Rodeo Drive, Suite 200, Beverly Hills, CA 90210',
+            'hours': 'Mon – Sat: 10:00 AM – 7:00 PM | Sun: By Private Appointment',
+            'phone': '+1 (310) 843-9820',
+            'email': 'beverlyhills@mcurtains.com',
+            'valet': 'Complimentary Private Valet at North Rodeo Porte-Cochère',
+            'highlights': ['14ft Architectural Window Displays', 'Motorized Somfy & Lutron Track Lab', 'Tactile 850+ Textile Library', 'Sommelier Tasting Lounge'],
+            'status': 'Open Today • Closes 7:00 PM',
+            'maps_url': 'https://maps.google.com/?q=450+N+Rodeo+Dr+Beverly+Hills+CA',
+            'image': 'images/showroom_flagship_hero.jpg',
+            'is_flagship': True,
+        },
+        {
+            'id': 'manhattan',
+            'city': 'New York (Manhattan)',
+            'title': 'Upper East Side Design Studio',
+            'badge': 'Architectural Studio',
+            'address': '782 Madison Avenue, 4th Floor, New York, NY 10065',
+            'hours': 'Mon – Fri: 9:30 AM – 6:30 PM | Sat: 10:00 AM – 6:00 PM',
+            'phone': '+1 (212) 744-1290',
+            'email': 'manhattan@mcurtains.com',
+            'valet': 'Reserved Towncar & Valet on 66th Street',
+            'highlights': ['Penthouse Skyline Simulation', 'Acoustic Soundproofing Chamber', 'Architectural Ripplefold Lab', 'Swatch Take-Home Station'],
+            'status': 'Open Today • Closes 6:30 PM',
+            'maps_url': 'https://maps.google.com/?q=782+Madison+Ave+New+York+NY',
+            'image': 'images/showroom_swatch_lab.jpg',
+            'is_flagship': False,
+        },
+        {
+            'id': 'london',
+            'city': 'London (Mayfair)',
+            'title': 'Mayfair Private Gallery',
+            'badge': 'Heritage Gallery',
+            'address': '32 Mount Street, Mayfair, London W1K 2RA, United Kingdom',
+            'hours': 'Mon – Sat: 10:00 AM – 6:30 PM | Sun: Private Viewings Only',
+            'phone': '+44 20 7946 0880',
+            'email': 'mayfair@mcurtains.com',
+            'valet': 'Chauffeured Client Pickup & Mount Street Valet',
+            'highlights': ['Heritage Silk Velvet & Wool Library', 'Hand-Forged Antique Brass Hardware', 'French Goblet & Pinch Pleat Gallery', 'Private Champagne Bar'],
+            'status': 'Open Today • Closes 6:30 PM',
+            'maps_url': 'https://maps.google.com/?q=32+Mount+St+Mayfair+London',
+            'image': 'images/showroom_vip_lounge.jpg',
+            'is_flagship': False,
+        },
+        {
+            'id': 'dubai',
+            'city': 'Dubai (DIFC)',
+            'title': 'DIFC Gate Village Pavilion',
+            'badge': 'Contemporary Atelier',
+            'address': 'Building 06, Gate Village, DIFC, Dubai, United Arab Emirates',
+            'hours': 'Sun – Thu: 10:00 AM – 8:00 PM | Fri – Sat: 11:00 AM – 8:00 PM',
+            'phone': '+971 4 362 7000',
+            'email': 'dubai@mcurtains.com',
+            'valet': 'VIP Valet Parking at DIFC Gate Village Gate 4',
+            'highlights': ['Double-Height Glass Wall Drapes', 'Solar Heat-Reflective Textiles', 'Smart Home Automation Lab', 'Private Majlis VIP Suite'],
+            'status': 'Open Today • Closes 8:00 PM',
+            'maps_url': 'https://maps.google.com/?q=Gate+Village+DIFC+Dubai',
+            'image': 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80',
+            'is_flagship': False,
+        },
+    ]
+
+    context = {
+        'showrooms': showrooms,
+    }
+    return render(request, 'core/contact.html', context)
 
 
 # ==========================================================================

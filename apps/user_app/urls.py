@@ -10,6 +10,8 @@ urlpatterns = [
     path('measurement-guide/', views.measurement_guide_view, name='measurement_guide'),
     path('about/', views.about_view, name='about'),
     path('contact/', views.contact_view, name='contact'),
+    path('showrooms/', views.contact_view, name='showrooms'),
+    path('showroom/', views.contact_view, name='showroom'),
 
     # 2. User Authentication & Profile
     path('accounts/register/', views.register_view, name='register'),

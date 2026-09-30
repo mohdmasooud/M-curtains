@@ -147,7 +147,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link nav-link-luxe {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'core:contact' %}">Showrooms</a>
+              <a class="nav-link nav-link-luxe {% if request.resolver_match.url_name == 'contact' or request.resolver_match.url_name == 'showrooms' or request.resolver_match.url_name == 'showroom' %}active{% endif %}" href="{% url 'core:contact' %}">Showrooms</a>
             </li>
           </ul>
 
